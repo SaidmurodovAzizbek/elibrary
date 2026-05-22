@@ -1,0 +1,462 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700&family=Caveat:wght@500;600;700&display=swap');
+
+:root {
+  /* Light Theme Variables */
+  --bg-gradient-light: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  --text-color-light: #ffffff;
+  --glow-1-light: rgba(255, 255, 255, 0.15);
+  --glow-2-light: rgba(0, 255, 200, 0.15);
+  --badge-bg-light: rgba(255, 255, 255, 0.2);
+  --footer-color-light: rgba(0, 0, 0, 0.6);
+  
+  /* Dark Theme Variables */
+  --bg-gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --text-color-dark: #f8fafc;
+  --glow-1-dark: rgba(0, 150, 255, 0.08);
+  --glow-2-dark: rgba(255, 0, 150, 0.08);
+  --badge-bg-dark: rgba(255, 255, 255, 0.1);
+  --footer-color-dark: rgba(255, 255, 255, 0.6);
+}
+
+.landing-new {
+  --bg-gradient: var(--bg-gradient-light);
+  --text-color: var(--text-color-light);
+  --glow-1: var(--glow-1-light);
+  --glow-2: var(--glow-2-light);
+  --badge-bg: var(--badge-bg-light);
+  --footer-color: var(--footer-color-light);
+
+  min-height: 100vh;
+  width: 100vw;
+  background: var(--bg-gradient);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+.landing-new[data-theme="dark"] {
+  --bg-gradient: var(--bg-gradient-dark);
+  --text-color: var(--text-color-dark);
+  --glow-1: var(--glow-1-dark);
+  --glow-2: var(--glow-2-dark);
+  --badge-bg: var(--badge-bg-dark);
+  --footer-color: var(--footer-color-dark);
+}
+
+/* ========================================================
+   TEXTURES & OVERLAYS 
+   ======================================================== */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: overlay;
+}
+
+[data-theme="dark"] .noise-overlay { opacity: 0.06; }
+
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(var(--text-color) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Ambient glow effects */
+.landing-new__glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 1;
+  pointer-events: none;
+  transition: background 0.5s ease;
+}
+.landing-new__glow--1 { width: 600px; height: 600px; background: var(--glow-1); top: -200px; left: -200px; }
+.landing-new__glow--2 { width: 800px; height: 800px; background: var(--glow-2); bottom: -300px; right: -200px; }
+
+/* ========================================================
+   HEADER
+   ======================================================== */
+.landing-new__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem 4rem;
+  width: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 20;
+}
+
+.landing-new__logo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.landing-new__actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.landing-new__theme-toggle,
+.landing-new__lang {
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  background: var(--badge-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+}
+
+.landing-new__theme-toggle:hover,
+.landing-new__lang:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* ========================================================
+   SIDE GALLERY SHAPES (REALISTIC BOOK STACKS - PAGES OUT)
+   ======================================================== */
+.side-gallery {
+  position: absolute; 
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  width: 300px;
+}
+
+.left-gallery { left: 0; align-items: flex-start; }
+.right-gallery { right: 0; align-items: flex-end; }
+
+.book-stack-item {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* Shadow beneath each book to pop from the one below */
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3));
+  margin-bottom: -1px; /* prevents tiny sub-pixel gaps */
+  transition: transform 0.3s ease;
+}
+
+.book-cover {
+  height: 6px;
+  width: 100%;
+  background-color: var(--book-color);
+  position: relative;
+  z-index: 2;
+  box-shadow: inset 0 2px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.2);
+}
+
+.left-book .book-cover {
+  border-radius: 0 3px 3px 0;
+}
+.right-book .book-cover {
+  border-radius: 3px 0 0 3px;
+}
+
+.book-pages-block {
+  flex: 1;
+  background-color: #f1f2f6;
+  /* Horizontal lines for pages */
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px);
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="dark"] .book-pages-block {
+  background-color: #dcdde1;
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px);
+}
+
+.left-book .book-pages-block {
+  /* Recessed pages on the right so covers stick out */
+  width: calc(100% - 7px);
+  border-right: 1px solid rgba(0,0,0,0.15);
+  border-radius: 0 1px 1px 0;
+}
+
+.right-book .book-pages-block {
+  /* Recessed pages on the left so covers stick out */
+  width: calc(100% - 7px);
+  margin-left: 7px;
+  border-left: 1px solid rgba(0,0,0,0.15);
+  border-radius: 1px 0 0 1px;
+}
+
+/* ========================================================
+   HERO SECTION
+   ======================================================== */
+.landing-new__main {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 15;
+  position: relative;
+}
+
+.landing-new__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+
+.landing-new__badge {
+  background: var(--badge-bg);
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  letter-spacing: 0.5px;
+}
+
+.landing-new__title {
+  font-size: clamp(4rem, 9vw, 7rem);
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  letter-spacing: -2px;
+  text-align: center;
+  line-height: 1;
+}
+
+.landing-new__lines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.line {
+  height: 6px;
+  background-color: var(--text-color);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.5s ease;
+}
+
+.line-1 { width: 350px; }
+.line-2 { width: 550px; }
+.line-3 { width: 300px; }
+.line-4 { width: 450px; }
+
+.landing-new__scroll-hint {
+  margin-top: 60px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.scroll-arrow { animation: bounce 2s infinite; }
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+}
+
+/* ========================================================
+   NOTEBOOKS SECTION 
+   ======================================================== */
+.notebooks-section {
+  min-height: 100vh; 
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 15;
+  padding: 4rem 2rem;
+}
+
+.notebooks-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notebook {
+  position: absolute;
+  width: 360px;
+  height: 500px;
+  border-radius: 10px 20px 20px 10px;
+  box-shadow: 0 35px 70px rgba(0,0,0,0.5), inset -5px 0 15px rgba(0,0,0,0.05);
+  display: flex;
+  transform-origin: center center;
+}
+
+.notebook-spiral {
+  width: 40px;
+  height: 100%;
+  background: #f0f0f0;
+  border-radius: 10px 0 0 10px;
+  border-right: 1px solid rgba(0,0,0,0.1);
+  position: relative;
+  background-image: radial-gradient(circle at 20px 20px, #222 5px, transparent 6px);
+  background-size: 100% 40px;
+  z-index: 2;
+  box-shadow: inset -3px 0 6px rgba(0,0,0,0.15);
+}
+
+.notebook-spiral::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 8px; width: 30px; height: 100%;
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 18px, #a0a0a0 18px, #f9f9f9 20px, #a0a0a0 22px, transparent 22px, transparent 40px);
+  z-index: 3;
+}
+
+.notebook-cover {
+  flex: 1;
+  border-radius: 0 20px 20px 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* Colors for the 3 Back Notebooks */
+.notebook-blue .notebook-cover { background-color: #3b82f6; }   
+.notebook-green .notebook-cover { background-color: #10b981; }  
+.notebook-red .notebook-cover { background-color: #ef4444; }    
+
+/* Front Yellow Notebook */
+.notebook-yellow-front .notebook-content {
+  flex: 1;
+  background-color: #ffbc00; 
+  border-radius: 0 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+}
+
+/* Cursive Handwritten Links Styling */
+.cursive-links {
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+  flex: 1;
+}
+
+.cursive-links h2 {
+  font-family: 'Caveat', cursive;
+  color: #222;
+  margin-bottom: 1.5rem;
+  font-size: 3.8rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.4);
+}
+
+.notebook-btn-cursive {
+  background: transparent;
+  border: none;
+  font-family: 'Caveat', cursive;
+  font-size: 2.6rem;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 5px 20px;
+  position: relative;
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.3);
+}
+
+.notebook-btn-cursive::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 10%;
+  width: 0%; height: 3px;
+  background: #333;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.notebook-btn-cursive:hover {
+  transform: scale(1.1) rotate(-3deg);
+  color: #000;
+}
+.notebook-btn-cursive:hover::after {
+  width: 80%;
+}
+
+/* ========================================================
+   FOOTER
+   ======================================================== */
+.landing-new__footer {
+  text-align: center;
+  padding: 2.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--footer-color);
+  position: relative;
+  z-index: 15;
+  background: rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .landing-new__footer {
+  background: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ========================================================
+   RESPONSIVE
+   ======================================================== */
+@media (max-width: 768px) {
+  .landing-new__header { padding: 1.5rem 2rem; }
+  
+  .side-gallery { width: 120px; }
+  
+  .notebook { width: 300px; height: 420px; }
+  .cursive-links h2 { font-size: 2.8rem; }
+  .notebook-btn-cursive { font-size: 2rem; }
+}
+
+@media (max-width: 480px) {
+  .book-stack-item { display: none; } /* hide on very small screens for cleanliness */
+  .notebook { width: 260px; height: 380px; }
+  .cursive-links h2 { font-size: 2.4rem; }
+  .notebook-btn-cursive { font-size: 1.8rem; }
+}

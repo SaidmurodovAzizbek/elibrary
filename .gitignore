@@ -216,3 +216,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ─── Node.js / Frontend ────────────────────────────
+node_modules/
+dist/
+.cache/
+.parcel-cache/
+*.tsbuildinfo
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

@@ -1,0 +1,88 @@
+/* ═══════════════════════════════════════════════════════
+   Cursor Follower Styles
+   ═══════════════════════════════════════════════════════ */
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--clr-primary);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  opacity: 0;
+  transition: 
+    width 0.3s var(--ease-spring),
+    height 0.3s var(--ease-spring),
+    opacity 0.3s ease,
+    background 0.3s ease;
+  mix-blend-mode: difference;
+}
+
+.cursor-dot.visible {
+  opacity: 1;
+}
+
+.cursor-dot.hovering {
+  width: 40px;
+  height: 40px;
+  background: var(--clr-primary);
+  opacity: 0.5;
+  mix-blend-mode: normal;
+}
+
+.cursor-dot.clicking {
+  width: 6px;
+  height: 6px;
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid rgba(108, 99, 255, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  opacity: 0;
+  transition: 
+    width 0.4s var(--ease-spring),
+    height 0.4s var(--ease-spring),
+    opacity 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease;
+  background: transparent;
+  backdrop-filter: blur(2px);
+}
+
+.cursor-ring.visible {
+  opacity: 1;
+}
+
+.cursor-ring.hovering {
+  width: 60px;
+  height: 60px;
+  border-color: rgba(108, 99, 255, 0.8);
+  background: rgba(108, 99, 255, 0.05);
+}
+
+.cursor-ring.clicking {
+  width: 35px;
+  height: 35px;
+  border-color: var(--clr-secondary);
+}
+
+/* Hide default cursor */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  a, button, [role="button"], input, select, textarea, .hoverable {
+    cursor: none;
+  }
+}
