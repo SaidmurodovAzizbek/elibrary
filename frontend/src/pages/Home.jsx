@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useStore } from '../store';
 import './Home.css';
 
 export default function Home() {
   const [selectedBook, setSelectedBook] = useState(null);
+  const addToCart = useStore((state) => state.addToCart);
 
   // Mock data for featured books with additional details
   const books = [
@@ -167,7 +169,15 @@ export default function Home() {
                   </div>
                   
                   <div className="book-modal__actions">
-                    <button className="book-modal__btn primary">O'qishni boshlash</button>
+                    <button 
+                      className="book-modal__btn primary"
+                      onClick={() => {
+                        addToCart(selectedBook);
+                        closeModal();
+                      }}
+                    >
+                      Buyurtma qilish
+                    </button>
                     <button className="book-modal__btn secondary">Sevimlilarga qo'shish</button>
                   </div>
                 </div>
