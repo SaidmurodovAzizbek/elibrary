@@ -4,7 +4,6 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Landing from './pages/Landing';
-import Landing2 from './pages/Landing2';
 import MainLayout from './components/MainLayout';
 import Home from './pages/Home';
 import Authors from './pages/Authors';
@@ -41,7 +40,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/landing2" element={<Landing2 />} />
         <Route element={<MainLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/authors" element={<Authors />} />
