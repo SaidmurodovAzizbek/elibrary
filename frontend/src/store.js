@@ -14,32 +14,38 @@ export const useStore = create((set, get) => ({
   })),
   clearCart: () => set({ cart: [] }),
 
-  // ─── Auth ──────────────────────────────────────────────
+  // ─── Auth & role ───────────────────────────────────────
+  // role: null (guest) | 'reviewer' | 'admin'
+  // NOTE: backend does not return roles yet, so the role is chosen
+  // at login and stored locally. Wire to the API token later.
   isLoggedIn: !!localStorage.getItem('access_token'),
+  role: localStorage.getItem('role') || null,
 
-  login: async (phoneNumber, password) => {
+  login: async (phoneNumber, password, role = 'reviewer') => {
     const res = await api.post('/auth/login', {
       phone_number: phoneNumber,
       password,
     });
     localStorage.setItem('access_token', res.data.access_token);
     localStorage.setItem('refresh_token', res.data.refresh_token);
-    set({ isLoggedIn: true });
+    localStorage.setItem('role', role);
+    set({ isLoggedIn: true, role });
     await get().fetchFavorites();
   },
 
-  register: async (phoneNumber, password) => {
+  register: async (phoneNumber, password, role = 'reviewer') => {
     await api.post('/auth/register', {
       phone_number: phoneNumber,
       password,
     });
-    await get().login(phoneNumber, password);
+    await get().login(phoneNumber, password, role);
   },
 
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    set({ isLoggedIn: false, favorites: [] });
+    localStorage.removeItem('role');
+    set({ isLoggedIn: false, role: null, favorites: [] });
   },
 
   // ─── Favorites ─────────────────────────────────────────
