@@ -20,11 +20,14 @@ async def list_books(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     search: str | None = None,
+    author_id: int | None = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """Kitoblar ro'yxati (qidirish bilan)."""
+    """Kitoblar ro'yxati (qidirish va muallif filtri bilan)."""
     if search:
         return await crud_book.search_by_title(db, search, skip, limit)
+    if author_id:
+        return await crud_book.get_by_author(db, author_id, skip, limit)
     return await crud_book.get_multi_detailed(db, skip, limit)
 
 
