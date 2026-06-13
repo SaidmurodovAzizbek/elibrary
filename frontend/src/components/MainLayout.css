@@ -1,91 +1,132 @@
+/* ═══════════════════════════════════════════════════════
+   eLibrary — App shell theme system (Premium, light + dark)
+   Echoes the landing aesthetic: glassmorphism + gradient
+   accents (#6C63FF / #00D9FF / #FF6B9D) in both themes.
+   ═══════════════════════════════════════════════════════ */
+
 :root {
-  /* Light Theme Variables from Landing.css */
-  --bg-gradient-light: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-  --text-color-light: #ffffff;
-  --glow-1-light: rgba(255, 255, 255, 0.15);
-  --glow-2-light: rgba(0, 255, 200, 0.15);
-  --badge-bg-light: rgba(255, 255, 255, 0.2);
-  --card-bg-light: rgba(255, 255, 255, 0.15);
-  --input-bg-light: rgba(255, 255, 255, 0.2);
-  
-  /* Dark Theme Variables */
-  --bg-gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  --text-color-dark: #f8fafc;
-  --glow-1-dark: rgba(0, 150, 255, 0.08);
-  --glow-2-dark: rgba(255, 0, 150, 0.08);
-  --badge-bg-dark: rgba(255, 255, 255, 0.05);
-  --card-bg-dark: rgba(255, 255, 255, 0.05);
-  --input-bg-dark: rgba(255, 255, 255, 0.08);
+  /* ─── Shared accents (theme-independent) ───────────── */
+  --accent-1: #6c63ff;
+  --accent-2: #00d9ff;
+  --accent-3: #ff6b9d;
+  --gradient-accent: linear-gradient(135deg, #6c63ff, #00d9ff);
+  --gradient-accent-3: linear-gradient(110deg, #6c63ff 0%, #00d9ff 50%, #ff6b9d 100%);
+  --accent-glow: 0 0 28px rgba(108, 99, 255, 0.45);
+
+  /* ─── Dark theme (default — matches landing) ───────── */
+  --bg-base-dark: #05050f;
+  --bg-gradient-dark:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108, 99, 255, 0.22), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 18%, rgba(0, 217, 255, 0.10), transparent 55%),
+    radial-gradient(ellipse 60% 55% at 8% 72%, rgba(255, 107, 157, 0.09), transparent 55%),
+    linear-gradient(180deg, #05050f 0%, #0a0a1e 55%, #05050f 100%);
+  --text-color-dark: #f4f4ff;
+  --text-muted-dark: #9a9ac4;
+  --card-bg-dark: rgba(255, 255, 255, 0.04);
+  --card-border-dark: rgba(255, 255, 255, 0.09);
+  --badge-bg-dark: rgba(255, 255, 255, 0.06);
+  --input-bg-dark: rgba(255, 255, 255, 0.05);
+  --surface-solid-dark: rgba(13, 13, 31, 0.85);
+  --glow-1-dark: rgba(108, 99, 255, 0.18);
+  --glow-2-dark: rgba(0, 217, 255, 0.12);
+
+  /* ─── Light theme (premium lavender, not flat blue) ── */
+  --bg-base-light: #eef0fb;
+  --bg-gradient-light:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108, 99, 255, 0.16), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 18%, rgba(0, 217, 255, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 55% at 8% 72%, rgba(255, 107, 157, 0.12), transparent 55%),
+    linear-gradient(180deg, #f5f6fe 0%, #e9ebfb 55%, #f5f6fe 100%);
+  --text-color-light: #15152e;
+  --text-muted-light: #5c5c7c;
+  --card-bg-light: rgba(255, 255, 255, 0.62);
+  --card-border-light: rgba(20, 20, 60, 0.08);
+  --badge-bg-light: rgba(255, 255, 255, 0.6);
+  --input-bg-light: rgba(20, 20, 60, 0.04);
+  --surface-solid-light: rgba(255, 255, 255, 0.9);
+  --glow-1-light: rgba(108, 99, 255, 0.14);
+  --glow-2-light: rgba(0, 217, 255, 0.12);
 }
 
-/* Default state (fallback or dark) */
 body {
   margin: 0;
   padding: 0;
 }
 
+/* Default = dark */
 :root {
+  --bg-base: var(--bg-base-dark);
   --bg-gradient: var(--bg-gradient-dark);
   --text-color: var(--text-color-dark);
+  --text-muted: var(--text-muted-dark);
+  --card-bg: var(--card-bg-dark);
+  --card-border: var(--card-border-dark);
+  --badge-bg: var(--badge-bg-dark);
+  --input-bg: var(--input-bg-dark);
+  --surface-solid: var(--surface-solid-dark);
   --glow-1: var(--glow-1-dark);
   --glow-2: var(--glow-2-dark);
-  --badge-bg: var(--badge-bg-dark);
-  --card-bg: var(--card-bg-dark);
-  --input-bg: var(--input-bg-dark);
 }
 
 [data-theme="light"] {
+  --bg-base: var(--bg-base-light);
   --bg-gradient: var(--bg-gradient-light);
   --text-color: var(--text-color-light);
+  --text-muted: var(--text-muted-light);
+  --card-bg: var(--card-bg-light);
+  --card-border: var(--card-border-light);
+  --badge-bg: var(--badge-bg-light);
+  --input-bg: var(--input-bg-light);
+  --surface-solid: var(--surface-solid-light);
   --glow-1: var(--glow-1-light);
   --glow-2: var(--glow-2-light);
-  --badge-bg: var(--badge-bg-light);
-  --card-bg: var(--card-bg-light);
-  --input-bg: var(--input-bg-light);
+}
+
+body {
+  background: var(--bg-base);
 }
 
 .main-layout {
   min-height: 100vh;
-  width: 100vw;
+  width: 100%;
   background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-color);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   position: relative;
-  transition: background 0.5s ease, color 0.5s ease;
+  transition: color 0.5s ease;
   display: flex;
   flex-direction: column;
 }
 
-/* Texture and Overlays */
+/* ─── Texture & overlays ──────────────────────────────── */
 .noise-overlay {
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.035;
   pointer-events: none;
   z-index: 2;
   mix-blend-mode: overlay;
 }
-
-[data-theme="dark"] .noise-overlay { opacity: 0.06; }
 
 .grid-overlay {
   position: fixed;
   inset: 0;
   background-image: radial-gradient(var(--text-color) 1px, transparent 1px);
   background-size: 50px 50px;
-  opacity: 0.08;
+  opacity: 0.04;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Ambient glows */
+/* ─── Ambient glows ───────────────────────────────────── */
 .main-layout__glow {
   position: fixed;
   border-radius: 50%;
   filter: blur(120px);
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
   transition: background 0.5s ease;
 }
@@ -98,5 +139,5 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding-top: 100px; /* Space for the fixed navbar */
+  padding-top: 100px; /* room for fixed navbar */
 }

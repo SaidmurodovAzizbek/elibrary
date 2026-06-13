@@ -72,7 +72,7 @@ export default function Navbar() {
       >
         <div className="navbar-new__container">
           <div className="navbar-new__logo-wrapper" onClick={() => navigate('/home')}>
-            <div className="navbar-new__logo">eLibrary</div>
+            <div className="navbar-new__logo"><span className="navbar-new__logo-mark">e</span>Library</div>
           </div>
 
           <nav className="navbar-new__nav">

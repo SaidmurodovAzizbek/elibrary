@@ -61,9 +61,15 @@ export default function Home() {
       transition={{ duration: 0.5 }}
     >
       <section className="books-section">
-        <h1 className="section-title">
-          {search ? `"${search}" — qidiruv natijalari` : 'Kitoblar'}
-        </h1>
+        <div className="page-head">
+          <span className="page-eyebrow">eLibrary kolleksiyasi</span>
+          {search ? (
+            <h1 className="section-title">"{search}" — <span className="grad-text">natijalar</span></h1>
+          ) : (
+            <h1 className="section-title">Barcha <span className="grad-text">kitoblar</span></h1>
+          )}
+          <p className="page-sub">Minglab asarlar orasidan o'zingizga yoqqanini tanlang va kashf eting.</p>
+        </div>
 
         {loading ? (
           <div className="loading-state">Yuklanmoqda...</div>
