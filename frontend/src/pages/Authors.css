@@ -1,77 +1,75 @@
+/* ═══════════════════════════════════════════════════════
+   Authors — Premium (light + dark)
+   ═══════════════════════════════════════════════════════ */
 .authors-section {
   z-index: 10;
   position: relative;
-  padding: 1rem 0 4rem 0;
 }
 
 .author-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .author-card {
   background: var(--card-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 2rem 1.5rem;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s, border-color 0.45s;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
-
 .author-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-12px);
+  border-color: rgba(108, 99, 255, 0.5);
+  box-shadow: 0 26px 50px rgba(0, 0, 0, 0.22), 0 0 40px rgba(108, 99, 255, 0.18);
 }
 
 .author-card__image {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1.4rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
   position: relative;
   overflow: hidden;
-  border: 4px solid rgba(255,255,255,0.1);
+  border: 3px solid rgba(108, 99, 255, 0.35);
+  background-size: cover !important;
+  background-position: center !important;
 }
-
 .author-card__overlay {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.2) 100%);
+  background-image: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.25) 100%);
 }
-
 .author-card__info h3 {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-color);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
-
 .author-card__info p {
-  font-size: 0.95rem;
-  color: var(--text-color);
-  opacity: 0.6;
+  font-size: 0.92rem;
+  color: var(--text-muted);
 }
 
-/* ========================================================
-   AUTHOR MODAL STYLES
-   ======================================================== */
+/* ═══════════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════════ */
 .author-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(3, 3, 12, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -80,36 +78,28 @@
 }
 
 .author-modal {
-  background: var(--card-bg);
-  background-color: var(--badge-bg); /* Fallback */
+  background: var(--surface-solid);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
+  border: 1px solid var(--card-border);
+  border-radius: 26px;
   width: 100%;
   max-width: 850px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
   color: var(--text-color);
   display: flex;
   flex-direction: column;
-}
-
-[data-theme="light"] .author-modal {
-  background: rgba(255, 255, 255, 0.7);
-}
-[data-theme="dark"] .author-modal {
-  background: rgba(15, 23, 42, 0.7);
 }
 
 .author-modal__close {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
   color: var(--text-color);
   width: 40px;
   height: 40px;
@@ -122,9 +112,8 @@
   transition: all 0.3s ease;
   z-index: 10;
 }
-
 .author-modal__close:hover {
-  background: rgba(255, 0, 0, 0.6);
+  background: var(--accent-3);
   color: #fff;
   transform: rotate(90deg);
 }
@@ -132,84 +121,65 @@
 .author-modal__header {
   display: flex;
   gap: 2.5rem;
-  padding: 3rem 3rem 2rem 3rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3rem 3rem 2rem;
+  border-bottom: 1px solid var(--card-border);
 }
-
-[data-theme="light"] .author-modal__header {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
 .author-modal__portrait {
   width: 180px;
   height: 180px;
-  border-radius: 20px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  border-radius: 22px;
+  box-shadow: 0 15px 34px rgba(0, 0, 0, 0.35);
   flex-shrink: 0;
-  border: 4px solid rgba(255,255,255,0.1);
+  border: 3px solid rgba(108, 99, 255, 0.35);
+  background-size: cover !important;
+  background-position: center !important;
 }
-
 .author-modal__meta {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-
 .author-modal__name {
-  font-size: 2.8rem;
+  font-size: 2.6rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
   line-height: 1.1;
-  letter-spacing: -1px;
+  letter-spacing: -0.02em;
 }
-
 .author-modal__years {
-  font-size: 1.1rem;
-  font-weight: 600;
-  opacity: 0.7;
-  display: inline-block;
-  margin-bottom: 1.5rem;
-}
-
-.author-modal__bio {
   font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent-1);
+  display: inline-block;
+  margin-bottom: 1.4rem;
+}
+.author-modal__bio {
+  font-size: 1.02rem;
   line-height: 1.7;
-  opacity: 0.85;
+  color: var(--text-muted);
 }
 
 .author-modal__books-section {
-  padding: 2rem 3rem 3rem 3rem;
+  padding: 2rem 3rem 3rem;
 }
-
 .author-modal__books-section h3 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
 }
 
-/* Horizontal scroll for books */
 .author-books-scroll {
   display: flex;
   gap: 1.5rem;
   overflow-x: auto;
   padding-bottom: 1.5rem;
-  /* hide scrollbar standard ways but allow scrolling */
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.3) transparent;
+  scrollbar-color: rgba(108, 99, 255, 0.4) transparent;
 }
-
-[data-theme="light"] .author-books-scroll {
-  scrollbar-color: rgba(0,0,0,0.2) transparent;
-}
-
-.author-books-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-.author-books-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
+.author-books-scroll::-webkit-scrollbar { height: 6px; }
+.author-books-scroll::-webkit-scrollbar-track { background: transparent; }
 .author-books-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(255,255,255,0.3);
+  background-color: rgba(108, 99, 255, 0.4);
   border-radius: 10px;
 }
 
@@ -220,31 +190,27 @@
   cursor: pointer;
   transition: transform 0.3s ease;
 }
-
-.author-book-item:hover {
-  transform: translateY(-5px);
-}
-
+.author-book-item:hover { transform: translateY(-6px); }
 .author-book-cover {
   width: 100%;
   height: 200px;
-  border-radius: 8px;
-  box-shadow: -3px 3px 10px rgba(0,0,0,0.3);
-  margin-bottom: 1rem;
+  border-radius: 12px;
+  box-shadow: -3px 5px 16px rgba(0, 0, 0, 0.35);
+  margin-bottom: 0.9rem;
   position: relative;
   overflow: hidden;
+  background-size: cover !important;
+  background-position: center !important;
 }
-
 .author-book-title {
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 700;
   margin-bottom: 0.3rem;
   line-height: 1.2;
 }
-
 .author-book-year {
   font-size: 0.85rem;
-  opacity: 0.6;
+  color: var(--text-muted);
 }
 
 @media (max-width: 768px) {
@@ -254,14 +220,6 @@
     text-align: center;
     padding: 2rem;
   }
-  
-  .author-modal__portrait {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-  }
-  
-  .author-modal__books-section {
-    padding: 1.5rem 2rem 2.5rem 2rem;
-  }
+  .author-modal__portrait { width: 140px; height: 140px; border-radius: 50%; }
+  .author-modal__books-section { padding: 1.5rem 2rem 2.5rem; }
 }

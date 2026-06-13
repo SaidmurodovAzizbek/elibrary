@@ -1,46 +1,8 @@
 /* ═══════════════════════════════════════════════════════
    Home — Premium book collection (light + dark)
+   Shared primitives (.page-container, .section-title, …)
+   live in styles/index.css
    ═══════════════════════════════════════════════════════ */
-.page-container {
-  padding: 1rem 5% 5rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* ─── Page header ─────────────────────────────────────── */
-.page-head {
-  margin-bottom: 3rem;
-  max-width: 720px;
-}
-.page-eyebrow {
-  display: inline-block;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent-2);
-  margin-bottom: 0.8rem;
-}
-.section-title {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
-  color: var(--text-color);
-}
-.grad-text {
-  background: var(--gradient-accent-3);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.page-sub {
-  margin-top: 1rem;
-  font-size: 1.08rem;
-  line-height: 1.6;
-  color: var(--text-muted);
-}
 
 /* ─── Grid ────────────────────────────────────────────── */
 .book-grid {

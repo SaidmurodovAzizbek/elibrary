@@ -59,7 +59,11 @@ export default function Authors() {
       transition={{ duration: 0.5 }}
     >
       <section className="authors-section">
-        <h1 className="section-title">Mualliflar</h1>
+        <div className="page-head">
+          <span className="page-eyebrow">Ijodkorlar</span>
+          <h1 className="section-title">Taniqli <span className="grad-text">mualliflar</span></h1>
+          <p className="page-sub">O'zbek va jahon adabiyotining yetuk ijodkorlari hamda ularning asarlari.</p>
+        </div>
 
         {loading ? (
           <div className="loading-state">Yuklanmoqda...</div>

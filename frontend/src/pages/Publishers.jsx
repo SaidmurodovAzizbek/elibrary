@@ -37,7 +37,11 @@ export default function Publishers() {
       transition={{ duration: 0.5 }}
     >
       <section className="publishers-section">
-        <h1 className="section-title">Nashriyotlar</h1>
+        <div className="page-head">
+          <span className="page-eyebrow">Hamkorlar</span>
+          <h1 className="section-title">Yetakchi <span className="grad-text">nashriyotlar</span></h1>
+          <p className="page-sub">Kitoblarni hayotga olib keluvchi nufuzli nashriyot uylari.</p>
+        </div>
 
         {loading ? (
           <div className="loading-state">Yuklanmoqda...</div>

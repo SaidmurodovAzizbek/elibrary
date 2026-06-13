@@ -62,7 +62,10 @@ export default function Favorites() {
     >
       <section className="favorites-section">
         <div className="favorites-header">
-          <h1 className="section-title">Sevimlilar</h1>
+          <div className="page-head" style={{ marginBottom: 0 }}>
+            <span className="page-eyebrow">Shaxsiy kutubxona</span>
+            <h1 className="section-title">Sizning <span className="grad-text">sevimlilaringiz</span></h1>
+          </div>
           <span className="favorites-count">{favorites.length} ta kitob</span>
         </div>
 

@@ -153,20 +153,49 @@ p {
   background-clip: text;
 }
 
-/* ─── Section Title ─────────────────────────────────── */
-.section-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: var(--fw-bold);
-  margin-bottom: var(--space-md);
-  text-align: center;
+/* ─── Shared page primitives (premium) ──────────────── */
+.page-container {
+  padding: 1rem 5% 5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.section-subtitle {
-  font-size: var(--fs-lg);
-  color: var(--clr-text-secondary);
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto var(--space-3xl);
+.page-head {
+  margin-bottom: 3rem;
+  max-width: 760px;
+}
+
+.page-eyebrow {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 0.8rem;
+}
+
+.section-title {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--text-color);
+}
+
+.grad-text {
+  background: var(--gradient-accent-3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-sub {
+  margin-top: 1rem;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 
 /* ─── Decorative Elements ───────────────────────────── */
