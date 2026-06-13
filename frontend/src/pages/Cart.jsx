@@ -4,6 +4,17 @@ import { useStore } from '../store';
 import { useNavigate } from 'react-router-dom';
 import './Cart.css';
 
+const GRADIENTS = [
+  'linear-gradient(135deg, #8a2be2, #4a00e0)',
+  'linear-gradient(135deg, #008080, #004d40)',
+  'linear-gradient(135deg, #ff7f50, #ff4500)',
+  'linear-gradient(135deg, #3498db, #2980b9)',
+  'linear-gradient(135deg, #f1c40f, #f39c12)',
+  'linear-gradient(135deg, #e74c3c, #c0392b)',
+  'linear-gradient(135deg, #1abc9c, #16a085)',
+  'linear-gradient(135deg, #9b59b6, #8e44ad)',
+];
+
 export default function Cart() {
   const { cart, removeFromCart, clearCart } = useStore();
   const navigate = useNavigate();
@@ -18,7 +29,10 @@ export default function Cart() {
     >
       <section className="cart-section">
         <div className="cart-header">
-          <h1 className="section-title">Korzinka</h1>
+          <div className="page-head" style={{ marginBottom: 0 }}>
+            <span className="page-eyebrow">Buyurtma</span>
+            <h1 className="section-title">Sizning <span className="grad-text">savatingiz</span></h1>
+          </div>
           {cart.length > 0 && (
             <span className="cart-count">{cart.length} ta kitob mavjud</span>
           )}
@@ -35,15 +49,20 @@ export default function Cart() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <div className="cart-item__cover" style={{ background: book.cover }}>
+                  <div
+                    className="cart-item__cover"
+                    style={{ background: book.image ? `url(${book.image})` : GRADIENTS[index % GRADIENTS.length] }}
+                  >
                     <div className="book-card__spine"></div>
                   </div>
-                  
+
                   <div className="cart-item__details">
                     <h3 className="cart-item__title">{book.title}</h3>
-                    <p className="cart-item__author">{book.author}</p>
+                    <p className="cart-item__author">{book.author?.full_name}</p>
                     <div className="cart-item__meta">
-                      <span>{book.publisher}</span> • <span>{book.year}</span>
+                      {book.publisher?.name && <span>{book.publisher.name}</span>}
+                      {book.publisher?.name && book.published_year && <span> • </span>}
+                      {book.published_year && <span>{book.published_year}</span>}
                     </div>
                   </div>
 

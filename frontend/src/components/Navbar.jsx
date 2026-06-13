@@ -13,11 +13,13 @@ export default function Navbar() {
   const [modalTab, setModalTab] = useState('login'); // 'login' | 'register'
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState('reviewer');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const cart = useStore((state) => state.cart);
   const isLoggedIn = useStore((state) => state.isLoggedIn);
+  const role = useStore((state) => state.role);
   const login = useStore((state) => state.login);
   const register = useStore((state) => state.register);
   const logout = useStore((state) => state.logout);
@@ -37,6 +39,7 @@ export default function Navbar() {
     setError('');
     setPhone('');
     setPassword('');
+    setSelectedRole('reviewer');
     setModalTab('login');
     setIsLoginModalOpen(true);
   };
@@ -50,9 +53,9 @@ export default function Navbar() {
     const fullPhone = `+998${phone.replace(/\s/g, '')}`;
     try {
       if (modalTab === 'login') {
-        await login(fullPhone, password);
+        await login(fullPhone, password, selectedRole);
       } else {
-        await register(fullPhone, password);
+        await register(fullPhone, password, selectedRole);
       }
       closeModal();
     } catch (err) {
@@ -72,7 +75,7 @@ export default function Navbar() {
       >
         <div className="navbar-new__container">
           <div className="navbar-new__logo-wrapper" onClick={() => navigate('/home')}>
-            <div className="navbar-new__logo">eLibrary</div>
+            <div className="navbar-new__logo"><span className="navbar-new__logo-mark">e</span>Library</div>
           </div>
 
           <nav className="navbar-new__nav">
@@ -127,9 +130,14 @@ export default function Navbar() {
             </button>
 
             {isLoggedIn ? (
-              <button className="navbar-new__login-btn" onClick={logout}>
-                Chiqish
-              </button>
+              <div className="navbar-new__user">
+                <span className={`role-badge role-badge--${role}`}>
+                  {role === 'admin' ? '⚙️ Admin' : '👁️ Reviewer'}
+                </span>
+                <button className="navbar-new__login-btn ghost" onClick={logout}>
+                  Chiqish
+                </button>
+              </div>
             ) : (
               <button className="navbar-new__login-btn" onClick={openModal}>
                 Kirish
@@ -206,9 +214,33 @@ export default function Navbar() {
                   />
                 </div>
 
+                <div className="input-group">
+                  <label>Rol (muhitni tanlang)</label>
+                  <div className="role-choice">
+                    <button
+                      type="button"
+                      className={`role-choice__opt ${selectedRole === 'reviewer' ? 'active' : ''}`}
+                      onClick={() => setSelectedRole('reviewer')}
+                    >
+                      <span className="role-choice__icon">👁️</span>
+                      <span className="role-choice__title">Reviewer</span>
+                      <span className="role-choice__desc">Faqat ko'rish</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`role-choice__opt ${selectedRole === 'admin' ? 'active' : ''}`}
+                      onClick={() => setSelectedRole('admin')}
+                    >
+                      <span className="role-choice__icon">⚙️</span>
+                      <span className="role-choice__title">Admin</span>
+                      <span className="role-choice__desc">To'liq boshqaruv</span>
+                    </button>
+                  </div>
+                </div>
+
                 {error && <p className="login-modal__error">{error}</p>}
 
-                <button type="submit" className="login-modal__submit" disabled={loading} style={{ marginTop: '1.5rem' }}>
+                <button type="submit" className="login-modal__submit" disabled={loading} style={{ marginTop: '1rem' }}>
                   {loading ? 'Yuklanmoqda...' : modalTab === 'login' ? 'Kirish' : "Ro'yxatdan o'tish"}
                 </button>
               </form>
