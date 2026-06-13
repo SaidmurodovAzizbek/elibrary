@@ -204,6 +204,28 @@ export default function Landing() {
       <footer className="landing-new__footer">
         <p>© 2026 eLibrary - Barcha huquqlar himoyalangan.</p>
       </footer>
+
+      {/* Version switcher → premium V2 */}
+      <button
+        onClick={() => navigate('/landing2')}
+        style={{
+          position: 'fixed',
+          bottom: '1.5rem',
+          right: '1.5rem',
+          zIndex: 250,
+          padding: '0.7rem 1.3rem',
+          borderRadius: '100px',
+          background: 'linear-gradient(135deg, #6c63ff, #00d9ff)',
+          border: 'none',
+          color: '#fff',
+          fontSize: '0.9rem',
+          fontWeight: 700,
+          cursor: 'pointer',
+          boxShadow: '0 8px 30px rgba(108, 99, 255, 0.5)',
+        }}
+      >
+        ✨ Yangi versiya (V2) →
+      </button>
     </div>
   );
 }
