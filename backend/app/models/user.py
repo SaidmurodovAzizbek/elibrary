@@ -2,7 +2,9 @@
 User model — foydalanuvchilar jadvali.
 
 Fields:
-    - phone_number: telefon raqam (unique, login uchun)
+    - username: login uchun nom (unique), masalan: admin
+    - role: foydalanuvchi roli — "admin" yoki "reviewer"
+    - phone_number: telefon raqam (unique), masalan: +998901234567
     - hashed_password: parol (hash)
     - favorites: sevimli kitoblar (Favorite orqali)
 """
@@ -20,6 +22,14 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
+    )
+    username: Mapped[str] = mapped_column(
+        String(50), unique=True, nullable=False, index=True,
+        comment="Login uchun nom, masalan: admin"
+    )
+    role: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="reviewer",
+        comment="Foydalanuvchi roli: 'admin' yoki 'reviewer'"
     )
     phone_number: Mapped[str] = mapped_column(
         String(20), unique=True, nullable=False, index=True,
@@ -47,4 +57,4 @@ class User(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, phone={self.phone_number})>"
+        return f"<User(id={self.id}, username={self.username}, role={self.role})>"

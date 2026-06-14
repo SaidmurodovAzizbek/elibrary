@@ -13,10 +13,24 @@ from app.config import settings
 
 
 # ─── Engine ───────────────────────────────────────────
+# Postgres (Neon) uchun maxsus sozlamalar:
+#   • ssl="require"          — Neon faqat SSL ulanishni qabul qiladi
+#   • statement_cache_size=0 — Neon pooler (PgBouncer transaction mode) bilan
+#                              prepared statement xatolarini oldini oladi
+_connect_args: dict = {}
+_engine_kwargs: dict = {"echo": settings.DEBUG, "future": True}
+
+if settings.DATABASE_URL.startswith("postgresql"):
+    _connect_args = {
+        "ssl": "require",
+        "statement_cache_size": 0,
+    }
+    _engine_kwargs["pool_pre_ping"] = True  # uzilgan ulanishlarni avtomatik tiklaydi
+
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=settings.DEBUG,
-    future=True,
+    connect_args=_connect_args,
+    **_engine_kwargs,
 )
 
 # ─── Session factory ─────────────────────────────────

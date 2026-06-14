@@ -16,27 +16,34 @@ router = APIRouter()
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def register(data: UserRegister, db: AsyncSession = Depends(get_db)):
     """Yangi foydalanuvchi ro'yxatdan o'tkazish."""
-    existing = await crud_user.get_by_phone(db, data.phone_number)
-    if existing:
+    if await crud_user.get_by_username(db, data.username):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Bu login allaqachon band",
+        )
+    if await crud_user.get_by_phone(db, data.phone_number):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Bu telefon raqam allaqachon ro'yxatdan o'tgan",
         )
-    user = await crud_user.create_user(db, data.model_dump())
+    payload = data.model_dump()
+    payload["role"] = payload["role"].value  # Enum -> str
+    user = await crud_user.create_user(db, payload)
     return user
 
 
 @router.post("/login", response_model=TokenResponse)
 async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
-    """Tizimga kirish — JWT token olish."""
-    user = await crud_user.get_by_phone(db, data.phone_number)
+    """Tizimga kirish — login (username) orqali JWT token olish."""
+    user = await crud_user.get_by_username(db, data.username)
     if not user or not verify_password(data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Telefon raqam yoki parol noto'g'ri",
+            detail="Login yoki parol noto'g'ri",
         )
+    claims = {"sub": str(user.id), "role": user.role}
     return TokenResponse(
-        access_token=create_access_token({"sub": str(user.id)}),
+        access_token=create_access_token(claims),
         refresh_token=create_refresh_token({"sub": str(user.id)}),
     )
 
