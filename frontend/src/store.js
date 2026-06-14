@@ -1,6 +1,17 @@
 import { create } from 'zustand';
 import api from './api';
 
+/* JWT payload ichidan rolni o'qish (admin / reviewer). */
+function decodeRole(token) {
+  if (!token) return null;
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64)).role || null;
+  } catch {
+    return null;
+  }
+}
+
 export const useStore = create((set, get) => ({
   // ─── Cart ──────────────────────────────────────────────
   cart: [],
@@ -16,30 +27,20 @@ export const useStore = create((set, get) => ({
 
   // ─── Auth ──────────────────────────────────────────────
   isLoggedIn: !!localStorage.getItem('access_token'),
+  role: decodeRole(localStorage.getItem('access_token')),
 
-  login: async (phoneNumber, password) => {
-    const res = await api.post('/auth/login', {
-      phone_number: phoneNumber,
-      password,
-    });
+  login: async (username, password) => {
+    const res = await api.post('/auth/login', { username, password });
     localStorage.setItem('access_token', res.data.access_token);
     localStorage.setItem('refresh_token', res.data.refresh_token);
-    set({ isLoggedIn: true });
+    set({ isLoggedIn: true, role: decodeRole(res.data.access_token) });
     await get().fetchFavorites();
-  },
-
-  register: async (phoneNumber, password) => {
-    await api.post('/auth/register', {
-      phone_number: phoneNumber,
-      password,
-    });
-    await get().login(phoneNumber, password);
   },
 
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    set({ isLoggedIn: false, favorites: [] });
+    set({ isLoggedIn: false, role: null, favorites: [] });
   },
 
   // ─── Favorites ─────────────────────────────────────────
