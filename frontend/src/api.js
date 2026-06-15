@@ -12,4 +12,22 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Token muddati tugasa yoki yaroqsiz bo'lsa (401) — tizimdan chiqarib,
+// login sahifasiga yo'naltiramiz. Login so'rovining o'zidagi 401 bundan mustasno.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url || '';
+    if (status === 401 && !url.includes('/auth/login')) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

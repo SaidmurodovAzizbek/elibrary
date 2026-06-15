@@ -87,3 +87,16 @@ async def get_current_user(
             detail="Foydalanuvchi topilmadi",
         )
     return user
+
+
+async def get_current_admin(current_user=Depends(get_current_user)):
+    """
+    FastAPI dependency — faqat 'admin' rolidagi foydalanuvchini o'tkazadi.
+    Reviewer (read-only) uchun 403 qaytaradi. CRUD endpointlarda ishlating.
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu amal uchun admin huquqi kerak",
+        )
+    return current_user

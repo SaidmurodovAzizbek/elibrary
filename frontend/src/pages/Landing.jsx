@@ -54,7 +54,7 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: '01', title: "Ro'yxatdan o'ting", text: 'Telefon raqamingiz orqali bir daqiqada hisob yarating.' },
+  { n: '01', title: 'Tizimga kiring', text: 'Sizga berilgan login va parol orqali hisobingizga kiring.' },
   { n: '02', title: 'Asar tanlang', text: 'Minglab kitoblar orasidan o\'zingizga mosini toping.' },
   { n: '03', title: "O'qishni boshlang", text: 'Sevimlilarga qo\'shing va istalgan vaqtda o\'qing.' },
 ];
@@ -103,7 +103,7 @@ export default function Landing() {
           <Link to="/authors">Mualliflar</Link>
           <Link to="/publishers">Nashriyotlar</Link>
         </div>
-        <button className="l2-nav__cta" data-cursor onClick={() => navigate('/home')}>
+        <button className="l2-nav__cta" data-cursor onClick={() => navigate('/login')}>
           Kirish
         </button>
       </motion.nav>
@@ -152,7 +152,7 @@ export default function Landing() {
               data-cursor
               onMouseMove={magnetic}
               onMouseLeave={resetMag}
-              onClick={() => navigate('/home')}
+              onClick={() => navigate('/login')}
             >
               Kolleksiyani ochish
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -290,13 +290,13 @@ export default function Landing() {
           viewport={{ once: true, amount: 0.5 }}
         >
           <h2 className="l2-cta__title">Bilim olamiga<br /><span className="l2-grad-text">sayohatni boshlang</span></h2>
-          <p className="l2-cta__sub">Bepul ro'yxatdan o'ting va minglab kitoblardan bahramand bo'ling.</p>
+          <p className="l2-cta__sub">Hisobingizga kiring va minglab kitoblardan bahramand bo'ling.</p>
           <button
             className="l2-btn l2-btn--primary l2-btn--lg"
             data-cursor
             onMouseMove={magnetic}
             onMouseLeave={resetMag}
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/login')}
           >
             Hoziroq boshlash
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import api from '../api';
+import AddBookModal from '../components/AddBookModal';
 import './Home.css';
 
 const GRADIENTS = [
@@ -26,7 +27,6 @@ export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
-
   const addToCart = useStore((state) => state.addToCart);
   const isLoggedIn = useStore((state) => state.isLoggedIn);
   const role = useStore((state) => state.role);
@@ -42,9 +42,10 @@ export default function Home() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
 
+  const isAdmin = role === 'admin';
   const search = searchParams.get('search') || '';
 
-  useEffect(() => {
+  const fetchBooks = useCallback(() => {
     setLoading(true);
     const params = { limit: 100 };
     if (search) params.search = search;
@@ -53,13 +54,6 @@ export default function Home() {
       .catch(() => setBooks([]))
       .finally(() => setLoading(false));
   }, [search]);
-
-  // Load authors & publishers for the admin form selects
-  useEffect(() => {
-    if (!isAdmin) return;
-    api.get('/authors/', { params: { limit: 100 } }).then((r) => setAuthors(r.data)).catch(() => {});
-    api.get('/publishers/', { params: { limit: 100 } }).then((r) => setPublishers(r.data)).catch(() => {});
-  }, [isAdmin]);
 
   const closeModal = () => setSelectedBook(null);
   const isFavorited = (bookId) => favorites.some((f) => f.book_id === bookId);
@@ -129,6 +123,45 @@ export default function Home() {
     setFormOpen(false);
   };
 
+  // Kitob ma'lumotlarini matn fayl ko'rinishida yuklab olish
+  const downloadBook = (book) => {
+    const lines = [
+      `Kitob: ${book.title}`,
+      `Muallif: ${book.author?.full_name || '—'}`,
+      book.publisher ? `Nashriyot: ${book.publisher.name}` : null,
+      book.published_year ? `Nashr yili: ${book.published_year}` : null,
+      book.pages ? `Betlar soni: ${book.pages}` : null,
+      `Reyting: ${book.rating?.toFixed(1) ?? '—'}`,
+      '',
+      book.description || '',
+    ].filter((l) => l !== null).join('\n');
+    const blob = new Blob([lines], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${book.title}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Admin: kitobni o'chirish
+  const handleDeleteBook = async (book) => {
+    if (!window.confirm(`"${book.title}" kitobini o'chirmoqchimisiz?`)) return;
+    try {
+      await api.delete(`/books/${book.id}`);
+      closeModal();
+      fetchBooks();
+    } catch {
+      alert("Kitobni o'chirishda xatolik yuz berdi");
+    }
+  };
+
+  // Admin: tahrirlash — ko'rish modalini yopib, forma modalini ochamiz
+  const startEdit = (book) => {
+    setSelectedBook(null);
+    setEditingBook(book);
+  };
+
   return (
     <motion.div
       className="page-container home-page"
@@ -138,24 +171,9 @@ export default function Home() {
       transition={{ duration: 0.5 }}
     >
       <section className="books-section">
-        <div className="page-head">
-          <span className="page-eyebrow">eLibrary kolleksiyasi</span>
-          {search ? (
-            <h1 className="section-title">"{search}" — <span className="grad-text">natijalar</span></h1>
-          ) : (
-            <h1 className="section-title">Barcha <span className="grad-text">kitoblar</span></h1>
-          )}
-          <p className="page-sub">Minglab asarlar orasidan o'zingizga yoqqanini tanlang va kashf eting.</p>
-        </div>
-
-        {isAdmin && (
-          <div className="admin-bar">
-            <button className="admin-add-btn" onClick={openCreate}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-              Yangi kitob qo'shish
-            </button>
-          </div>
-        )}
+        <h1 className="section-title">
+          {search ? `"${search}" — qidiruv natijalari` : 'Kitoblar'}
+        </h1>
 
         {loading ? (
           <div className="loading-state">Yuklanmoqda...</div>
@@ -280,121 +298,40 @@ export default function Home() {
                   )}
 
                   <div className="book-modal__actions">
-                    {isAdmin ? (
-                      <>
-                        <button className="book-modal__btn primary" onClick={() => openEdit(selectedBook)}>
-                          Tahrirlash
-                        </button>
-                        <button className="book-modal__btn danger" onClick={(e) => handleDelete(selectedBook, e)}>
-                          O'chirish
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          className="book-modal__btn primary"
-                          onClick={() => { addToCart(selectedBook); closeModal(); }}
-                        >
-                          Buyurtma qilish
-                        </button>
-                        {isLoggedIn && (
-                          <button
-                            className={`book-modal__btn ${isFavorited(selectedBook.id) ? 'danger' : 'secondary'}`}
-                            onClick={() => toggleFavorite(selectedBook)}
-                          >
-                            {isFavorited(selectedBook.id) ? 'Sevimlilardan olib tashlash' : "Sevimlilarga qo'shish"}
-                          </button>
-                        )}
-                      </>
+                    <button
+                      className="book-modal__btn primary"
+                      onClick={() => { addToCart(selectedBook); closeModal(); }}
+                    >
+                      Buyurtma qilish
+                    </button>
+                    {isLoggedIn && (
+                      <button
+                        className={`book-modal__btn ${isFavorited(selectedBook.id) ? 'danger' : 'secondary'}`}
+                        onClick={() => toggleFavorite(selectedBook)}
+                      >
+                        {isFavorited(selectedBook.id) ? 'Sevimlilardan olib tashlash' : "Sevimlilarga qo'shish"}
+                      </button>
                     )}
                   </div>
+
+                  {isAdmin && (
+                    <div className="book-modal__admin-actions">
+                      <button
+                        className="book-modal__btn edit"
+                        onClick={() => startEdit(selectedBook)}
+                      >
+                        ✏ Tahrirlash
+                      </button>
+                      <button
+                        className="book-modal__btn delete"
+                        onClick={() => handleDeleteBook(selectedBook)}
+                      >
+                        🗑 O'chirish
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ─── Admin book form ───────────────────────────── */}
-      <AnimatePresence>
-        {formOpen && (
-          <motion.div
-            className="admin-form-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setFormOpen(false)}
-          >
-            <motion.div
-              className="admin-form"
-              initial={{ scale: 0.9, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 30 }}
-              transition={{ type: 'spring', bounce: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button className="admin-form__close" onClick={() => setFormOpen(false)} aria-label="Yopish">×</button>
-              <h2 className="admin-form__title">{editing ? 'Kitobni tahrirlash' : 'Yangi kitob'}</h2>
-
-              <form className="admin-form__grid" onSubmit={handleSubmit}>
-                <div className="admin-field">
-                  <label>Sarlavha *</label>
-                  <input value={form.title} onChange={(e) => setField('title', e.target.value)} required placeholder="Kitob nomi" />
-                </div>
-
-                <div className="admin-field">
-                  <label>Muallif *</label>
-                  <select value={form.author_id} onChange={(e) => setField('author_id', e.target.value)} required>
-                    <option value="">Muallifni tanlang</option>
-                    {authors.map((a) => <option key={a.id} value={a.id}>{a.full_name}</option>)}
-                  </select>
-                </div>
-
-                <div className="admin-field">
-                  <label>Nashriyot</label>
-                  <select value={form.publisher_id} onChange={(e) => setField('publisher_id', e.target.value)}>
-                    <option value="">— Tanlanmagan —</option>
-                    {publishers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-                  </select>
-                </div>
-
-                <div className="admin-field--row">
-                  <div className="admin-field">
-                    <label>Nashr yili</label>
-                    <input type="number" value={form.published_year} onChange={(e) => setField('published_year', e.target.value)} placeholder="2024" />
-                  </div>
-                  <div className="admin-field">
-                    <label>Betlar soni</label>
-                    <input type="number" value={form.pages} onChange={(e) => setField('pages', e.target.value)} placeholder="320" />
-                  </div>
-                </div>
-
-                <div className="admin-field--row">
-                  <div className="admin-field">
-                    <label>Narx (so'm)</label>
-                    <input type="number" value={form.price} onChange={(e) => setField('price', e.target.value)} placeholder="50000" />
-                  </div>
-                  <div className="admin-field">
-                    <label>Reyting (0-5)</label>
-                    <input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setField('rating', e.target.value)} placeholder="4.5" />
-                  </div>
-                </div>
-
-                <div className="admin-field">
-                  <label>Rasm havolasi (URL)</label>
-                  <input value={form.image} onChange={(e) => setField('image', e.target.value)} placeholder="https://..." />
-                </div>
-
-                <div className="admin-field">
-                  <label>Tavsif</label>
-                  <textarea value={form.description} onChange={(e) => setField('description', e.target.value)} placeholder="Kitob haqida qisqacha..." />
-                </div>
-
-                <div className="admin-form__actions">
-                  <button type="button" className="admin-btn ghost" onClick={() => setFormOpen(false)}>Bekor qilish</button>
-                  <button type="submit" className="admin-btn primary">{editing ? 'Saqlash' : "Qo'shish"}</button>
-                </div>
-              </form>
             </motion.div>
           </motion.div>
         )}

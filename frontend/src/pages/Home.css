@@ -1,10 +1,38 @@
-/* ═══════════════════════════════════════════════════════
-   Home — Premium book collection (light + dark)
-   Shared primitives (.page-container, .section-title, …)
-   live in styles/index.css
-   ═══════════════════════════════════════════════════════ */
+.page-container {
+  padding: 1rem 5% 4rem 5%;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
 
-/* ─── Grid ────────────────────────────────────────────── */
+.books-section {
+  z-index: 10;
+  position: relative;
+}
+
+.section-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  position: relative;
+  display: inline-block;
+  color: var(--text-color);
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  letter-spacing: -1px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 60px;
+  height: 5px;
+  background: var(--text-color);
+  border-radius: 3px;
+  opacity: 0.6;
+}
+
 .book-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -232,6 +260,50 @@
   background: var(--accent-3);
   color: #fff;
   border-color: transparent;
+}
+
+/* Sevimlilardan olib tashlash holati */
+.book-modal__btn.danger {
+  background: rgba(255, 82, 82, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 82, 82, 0.4);
+}
+.book-modal__btn.danger:hover {
+  background: rgba(255, 82, 82, 0.28);
+  transform: translateY(-2px);
+}
+
+/* Admin amallar qatori */
+.book-modal__admin-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(128, 128, 128, 0.25);
+  flex-wrap: wrap;
+}
+
+.book-modal__btn.edit {
+  background: rgba(108, 99, 255, 0.16);
+  color: #b8b2ff;
+  border: 1px solid rgba(108, 99, 255, 0.45);
+  flex: 1;
+}
+[data-theme="light"] .book-modal__btn.edit { color: #4a42d4; }
+.book-modal__btn.edit:hover {
+  background: rgba(108, 99, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.book-modal__btn.delete {
+  background: linear-gradient(120deg, #ff5252, #ff1744);
+  color: #fff;
+  flex: 1;
+  box-shadow: 0 6px 18px rgba(255, 23, 68, 0.3);
+}
+.book-modal__btn.delete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(255, 23, 68, 0.45);
 }
 
 @media (max-width: 768px) {

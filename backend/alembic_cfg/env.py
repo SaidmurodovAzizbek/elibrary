@@ -22,9 +22,16 @@ from app.models import User, Author, Publisher, Book, Favorite  # noqa: F401
 # ─── Alembic Config ──────────────────────────────────
 config = context.config
 
-# Set sqlalchemy.url from our .env settings
-# Convert async URL to sync for Alembic (alembic uses sync engine)
-sync_url = settings.DATABASE_URL.replace("+asyncpg", "").replace("+aiosqlite", "")
+# Set sqlalchemy.url from our .env settings.
+# Alembic sync engine ishlatadi, shuning uchun async drayverni sync ga o'giramiz:
+#   • asyncpg  → psycopg2 (sync), Neon uchun sslmode=require qo'shamiz
+#   • aiosqlite → sqlite3 (sync, o'rnatilgan)
+sync_url = settings.DATABASE_URL.replace("+aiosqlite", "")
+if "+asyncpg" in sync_url:
+    sync_url = sync_url.replace("+asyncpg", "+psycopg2")
+    if "sslmode=" not in sync_url:
+        sep = "&" if "?" in sync_url else "?"
+        sync_url = f"{sync_url}{sep}sslmode=require"
 config.set_main_option("sqlalchemy.url", sync_url)
 
 if config.config_file_name is not None:

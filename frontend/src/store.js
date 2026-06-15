@@ -1,6 +1,33 @@
 import { create } from 'zustand';
 import api from './api';
 
+/* JWT payload'ni dekod qilish. */
+function decodeToken(token) {
+  if (!token) return null;
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+}
+
+/* Token mavjud, formati to'g'ri va muddati tugamaganmi? */
+function isTokenValid(token) {
+  const payload = decodeToken(token);
+  if (!payload) return false;
+  if (payload.exp && Date.now() >= payload.exp * 1000) return false;
+  return true;
+}
+
+/* Boshlang'ich auth holati — muddati tugagan tokenni tozalaymiz. */
+const _initialToken = localStorage.getItem('access_token');
+const _initialValid = isTokenValid(_initialToken);
+if (_initialToken && !_initialValid) {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+}
+
 export const useStore = create((set, get) => ({
   // ─── Cart ──────────────────────────────────────────────
   cart: [],
@@ -14,38 +41,32 @@ export const useStore = create((set, get) => ({
   })),
   clearCart: () => set({ cart: [] }),
 
-  // ─── Auth & role ───────────────────────────────────────
-  // role: null (guest) | 'reviewer' | 'admin'
-  // NOTE: backend does not return roles yet, so the role is chosen
-  // at login and stored locally. Wire to the API token later.
+  // ─── Auth ──────────────────────────────────────────────
   isLoggedIn: !!localStorage.getItem('access_token'),
-  role: localStorage.getItem('role') || null,
 
-  login: async (phoneNumber, password, role = 'reviewer') => {
+  login: async (phoneNumber, password) => {
     const res = await api.post('/auth/login', {
       phone_number: phoneNumber,
       password,
     });
     localStorage.setItem('access_token', res.data.access_token);
     localStorage.setItem('refresh_token', res.data.refresh_token);
-    localStorage.setItem('role', role);
-    set({ isLoggedIn: true, role });
+    set({ isLoggedIn: true });
     await get().fetchFavorites();
   },
 
-  register: async (phoneNumber, password, role = 'reviewer') => {
+  register: async (phoneNumber, password) => {
     await api.post('/auth/register', {
       phone_number: phoneNumber,
       password,
     });
-    await get().login(phoneNumber, password, role);
+    await get().login(phoneNumber, password);
   },
 
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    localStorage.removeItem('role');
-    set({ isLoggedIn: false, role: null, favorites: [] });
+    set({ isLoggedIn: false, favorites: [] });
   },
 
   // ─── Favorites ─────────────────────────────────────────
