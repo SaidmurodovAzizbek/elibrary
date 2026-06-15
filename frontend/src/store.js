@@ -1,15 +1,31 @@
 import { create } from 'zustand';
 import api from './api';
 
-/* JWT payload ichidan rolni o'qish (admin / reviewer). */
-function decodeRole(token) {
+/* JWT payload'ni dekod qilish. */
+function decodeToken(token) {
   if (!token) return null;
   try {
     const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(atob(base64)).role || null;
+    return JSON.parse(atob(base64));
   } catch {
     return null;
   }
+}
+
+/* Token mavjud, formati to'g'ri va muddati tugamaganmi? */
+function isTokenValid(token) {
+  const payload = decodeToken(token);
+  if (!payload) return false;
+  if (payload.exp && Date.now() >= payload.exp * 1000) return false;
+  return true;
+}
+
+/* Boshlang'ich auth holati — muddati tugagan tokenni tozalaymiz. */
+const _initialToken = localStorage.getItem('access_token');
+const _initialValid = isTokenValid(_initialToken);
+if (_initialToken && !_initialValid) {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
 }
 
 export const useStore = create((set, get) => ({
@@ -26,14 +42,14 @@ export const useStore = create((set, get) => ({
   clearCart: () => set({ cart: [] }),
 
   // ─── Auth ──────────────────────────────────────────────
-  isLoggedIn: !!localStorage.getItem('access_token'),
-  role: decodeRole(localStorage.getItem('access_token')),
+  isLoggedIn: _initialValid,
+  role: _initialValid ? (decodeToken(_initialToken)?.role || null) : null,
 
   login: async (username, password) => {
     const res = await api.post('/auth/login', { username, password });
     localStorage.setItem('access_token', res.data.access_token);
     localStorage.setItem('refresh_token', res.data.refresh_token);
-    set({ isLoggedIn: true, role: decodeRole(res.data.access_token) });
+    set({ isLoggedIn: true, role: decodeToken(res.data.access_token)?.role || null });
     await get().fetchFavorites();
   },
 

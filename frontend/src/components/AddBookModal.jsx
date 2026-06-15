@@ -9,14 +9,30 @@ const EMPTY = {
   publisher_id: '',
   published_year: '',
   pages: '',
-  price: '',
   rating: '',
   image: '',
   description: '',
 };
 
-export default function AddBookModal({ onClose, onCreated }) {
-  const [form, setForm] = useState(EMPTY);
+/* Mavjud kitobdan forma holatini tayyorlash (edit rejimi uchun). */
+function fromBook(book) {
+  if (!book) return EMPTY;
+  const s = (v) => (v === null || v === undefined ? '' : String(v));
+  return {
+    title: s(book.title),
+    author_id: s(book.author_id),
+    publisher_id: s(book.publisher_id),
+    published_year: s(book.published_year),
+    pages: s(book.pages),
+    rating: s(book.rating),
+    image: s(book.image),
+    description: s(book.description),
+  };
+}
+
+export default function AddBookModal({ book = null, onClose, onSaved }) {
+  const isEdit = Boolean(book);
+  const [form, setForm] = useState(() => fromBook(book));
   const [authors, setAuthors] = useState([]);
   const [publishers, setPublishers] = useState([]);
   const [error, setError] = useState('');
@@ -78,21 +94,24 @@ export default function AddBookModal({ onClose, onCreated }) {
       publisher_id: form.publisher_id ? Number(form.publisher_id) : null,
       published_year: num(form.published_year),
       pages: num(form.pages),
-      price: form.price === '' ? 0 : Number(form.price),
       rating: form.rating === '' ? 0 : Number(form.rating),
       image: form.image.trim() || null,
       description: form.description.trim() || null,
     };
     try {
-      await api.post('/books/', payload);
-      onCreated?.();
+      if (isEdit) {
+        await api.put(`/books/${book.id}`, payload);
+      } else {
+        await api.post('/books/', payload);
+      }
+      onSaved?.();
       onClose();
     } catch (err) {
       const status = err.response?.status;
       if (status === 401 || status === 403) {
         setError('Bu amal uchun admin huquqi kerak');
       } else {
-        setError(err.response?.data?.detail || 'Kitob qo‘shilmadi');
+        setError(err.response?.data?.detail || 'Saqlashda xatolik');
       }
     } finally {
       setSaving(false);
@@ -116,7 +135,7 @@ export default function AddBookModal({ onClose, onCreated }) {
         onClick={(e) => e.stopPropagation()}
       >
         <button className="abm-close" onClick={onClose} aria-label="Yopish">×</button>
-        <h2 className="abm-title">Yangi kitob qo‘shish</h2>
+        <h2 className="abm-title">{isEdit ? 'Kitobni tahrirlash' : 'Yangi kitob qo‘shish'}</h2>
 
         <form className="abm-form" onSubmit={handleSubmit}>
           <div className="abm-field abm-col-2">
@@ -187,15 +206,10 @@ export default function AddBookModal({ onClose, onCreated }) {
             <input type="number" value={form.pages} onChange={set('pages')} placeholder="320" min="1" />
           </div>
           <div className="abm-field">
-            <label>Narx (so‘m)</label>
-            <input type="number" value={form.price} onChange={set('price')} placeholder="50000" min="0" />
-          </div>
-          <div className="abm-field">
             <label>Reyting (0–5)</label>
             <input type="number" value={form.rating} onChange={set('rating')} placeholder="4.5" min="0" max="5" step="0.1" />
           </div>
-
-          <div className="abm-field abm-col-2">
+          <div className="abm-field">
             <label>Muqova rasmi (URL)</label>
             <input value={form.image} onChange={set('image')} placeholder="https://..." />
           </div>
@@ -210,7 +224,7 @@ export default function AddBookModal({ onClose, onCreated }) {
           <div className="abm-actions abm-col-2">
             <button type="button" className="abm-btn ghost" onClick={onClose}>Bekor qilish</button>
             <button type="submit" className="abm-btn solid" disabled={saving}>
-              {saving ? 'Saqlanmoqda...' : 'Kitob qo‘shish'}
+              {saving ? 'Saqlanmoqda...' : isEdit ? 'Saqlash' : 'Kitob qo‘shish'}
             </button>
           </div>
         </form>

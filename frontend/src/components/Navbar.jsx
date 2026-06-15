@@ -8,13 +8,15 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [theme, setTheme] = useState('light');
+  // Ilova ichida standart — tun (dark) rejimi; tanlov localStorage'da saqlanadi.
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
   const cart = useStore((state) => state.cart);
   const logout = useStore((state) => state.logout);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');

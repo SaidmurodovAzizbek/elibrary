@@ -23,7 +23,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
   const [showAddBook, setShowAddBook] = useState(false);
-  const addToCart = useStore((state) => state.addToCart);
+  const [editingBook, setEditingBook] = useState(null);
   const isLoggedIn = useStore((state) => state.isLoggedIn);
   const role = useStore((state) => state.role);
   const favorites = useStore((state) => state.favorites);
@@ -56,6 +56,45 @@ export default function Home() {
     } else {
       await addFavorite(book.id);
     }
+  };
+
+  // Kitob ma'lumotlarini matn fayl ko'rinishida yuklab olish
+  const downloadBook = (book) => {
+    const lines = [
+      `Kitob: ${book.title}`,
+      `Muallif: ${book.author?.full_name || '—'}`,
+      book.publisher ? `Nashriyot: ${book.publisher.name}` : null,
+      book.published_year ? `Nashr yili: ${book.published_year}` : null,
+      book.pages ? `Betlar soni: ${book.pages}` : null,
+      `Reyting: ${book.rating?.toFixed(1) ?? '—'}`,
+      '',
+      book.description || '',
+    ].filter((l) => l !== null).join('\n');
+    const blob = new Blob([lines], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${book.title}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Admin: kitobni o'chirish
+  const handleDeleteBook = async (book) => {
+    if (!window.confirm(`"${book.title}" kitobini o'chirmoqchimisiz?`)) return;
+    try {
+      await api.delete(`/books/${book.id}`);
+      closeModal();
+      fetchBooks();
+    } catch {
+      alert("Kitobni o'chirishda xatolik yuz berdi");
+    }
+  };
+
+  // Admin: tahrirlash — ko'rish modalini yopib, forma modalini ochamiz
+  const startEdit = (book) => {
+    setSelectedBook(null);
+    setEditingBook(book);
   };
 
   return (
@@ -196,19 +235,36 @@ export default function Home() {
                   <div className="book-modal__actions">
                     <button
                       className="book-modal__btn primary"
-                      onClick={() => { addToCart(selectedBook); closeModal(); }}
+                      onClick={() => downloadBook(selectedBook)}
                     >
-                      Buyurtma qilish
+                      ⬇ Yuklab olish
                     </button>
                     {isLoggedIn && (
                       <button
                         className={`book-modal__btn ${isFavorited(selectedBook.id) ? 'danger' : 'secondary'}`}
                         onClick={() => toggleFavorite(selectedBook)}
                       >
-                        {isFavorited(selectedBook.id) ? 'Sevimlilardan olib tashlash' : "Sevimlilarga qo'shish"}
+                        {isFavorited(selectedBook.id) ? '♥ Sevimlilardan olib tashlash' : "♡ Sevimlilarga qo'shish"}
                       </button>
                     )}
                   </div>
+
+                  {isAdmin && (
+                    <div className="book-modal__admin-actions">
+                      <button
+                        className="book-modal__btn edit"
+                        onClick={() => startEdit(selectedBook)}
+                      >
+                        ✏ Tahrirlash
+                      </button>
+                      <button
+                        className="book-modal__btn delete"
+                        onClick={() => handleDeleteBook(selectedBook)}
+                      >
+                        🗑 O'chirish
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -217,10 +273,11 @@ export default function Home() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showAddBook && (
+        {(showAddBook || editingBook) && (
           <AddBookModal
-            onClose={() => setShowAddBook(false)}
-            onCreated={fetchBooks}
+            book={editingBook}
+            onClose={() => { setShowAddBook(false); setEditingBook(null); }}
+            onSaved={fetchBooks}
           />
         )}
       </AnimatePresence>

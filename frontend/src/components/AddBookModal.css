@@ -161,6 +161,47 @@
 .abm-btn.solid:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(108, 99, 255, 0.5); }
 .abm-btn.solid:disabled { opacity: 0.6; cursor: not-allowed; }
 
+/* ─── Light rejim moslamalari ─────────────────────────── */
+[data-theme="light"] .abm-modal {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+[data-theme="light"] .abm-title {
+  background: linear-gradient(120deg, #1e293b 30%, #4a42d4 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+[data-theme="light"] .abm-close {
+  color: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+[data-theme="light"] .abm-close:hover { color: #0f172a; background: rgba(0, 0, 0, 0.1); }
+[data-theme="light"] .abm-field label { color: rgba(15, 23, 42, 0.7); }
+[data-theme="light"] .abm-field input,
+[data-theme="light"] .abm-field select,
+[data-theme="light"] .abm-field textarea {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+[data-theme="light"] .abm-field input::placeholder,
+[data-theme="light"] .abm-field textarea::placeholder { color: rgba(15, 23, 42, 0.4); }
+[data-theme="light"] .abm-field select option { background: #fff; color: #0f172a; }
+[data-theme="light"] .abm-field input:focus,
+[data-theme="light"] .abm-field select:focus,
+[data-theme="light"] .abm-field textarea:focus {
+  background: rgba(108, 99, 255, 0.06);
+}
+[data-theme="light"] .abm-btn.ghost {
+  color: rgba(15, 23, 42, 0.75);
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+[data-theme="light"] .abm-btn.ghost:hover { color: #0f172a; background: rgba(0, 0, 0, 0.1); }
+
 @media (max-width: 560px) {
   .abm-form { grid-template-columns: 1fr; }
   .abm-modal { padding: 1.8rem 1.4rem 1.5rem; }
