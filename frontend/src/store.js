@@ -42,21 +42,31 @@ export const useStore = create((set, get) => ({
   clearCart: () => set({ cart: [] }),
 
   // ─── Auth ──────────────────────────────────────────────
-  isLoggedIn: _initialValid,
-  role: _initialValid ? (decodeToken(_initialToken)?.role || null) : null,
+  isLoggedIn: !!localStorage.getItem('access_token'),
 
-  login: async (username, password) => {
-    const res = await api.post('/auth/login', { username, password });
+  login: async (phoneNumber, password) => {
+    const res = await api.post('/auth/login', {
+      phone_number: phoneNumber,
+      password,
+    });
     localStorage.setItem('access_token', res.data.access_token);
     localStorage.setItem('refresh_token', res.data.refresh_token);
-    set({ isLoggedIn: true, role: decodeToken(res.data.access_token)?.role || null });
+    set({ isLoggedIn: true });
     await get().fetchFavorites();
+  },
+
+  register: async (phoneNumber, password) => {
+    await api.post('/auth/register', {
+      phone_number: phoneNumber,
+      password,
+    });
+    await get().login(phoneNumber, password);
   },
 
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    set({ isLoggedIn: false, role: null, favorites: [] });
+    set({ isLoggedIn: false, favorites: [] });
   },
 
   // ─── Favorites ─────────────────────────────────────────

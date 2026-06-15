@@ -1,160 +1,131 @@
+/* ═══════════════════════════════════════════════════════
+   Favorites — Premium (light + dark)
+   Book modal styles are shared from Home.css (global).
+   ═══════════════════════════════════════════════════════ */
 .favorites-section {
   z-index: 10;
   position: relative;
-  padding: 1rem 0 4rem 0;
 }
 
 .favorites-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
   margin-bottom: 2.5rem;
 }
-
-.favorites-header .section-title {
-  margin-bottom: 0; /* Reset since it's aligned */
-}
-
 .favorites-count {
   background: var(--badge-bg);
   color: var(--text-color);
-  padding: 0.4rem 1.2rem;
-  border-radius: 20px;
-  font-size: 0.95rem;
+  padding: 0.45rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.92rem;
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--card-border);
   backdrop-filter: blur(10px);
 }
 
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 2rem;
 }
 
 .fav-book-card {
   background: var(--card-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 1.3rem;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s, border-color 0.45s;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   position: relative;
 }
-
 .fav-book-card:hover {
-  transform: translateY(-10px) scale(1.02);
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-12px);
+  border-color: rgba(255, 107, 157, 0.5);
+  box-shadow: 0 26px 50px rgba(0, 0, 0, 0.22), 0 0 40px rgba(255, 107, 157, 0.18);
 }
 
 .fav-book-card__cover {
-  height: 300px;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+  height: 290px;
+  border-radius: 14px;
+  margin-bottom: 1.3rem;
   position: relative;
-  box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: -5px 8px 24px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   flex-shrink: 0;
+  background-size: cover !important;
+  background-position: center !important;
 }
-
 .fav-book-card__heart {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 35px;
-  height: 35px;
-  background: rgba(255,255,255,0.2);
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(10px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff4757;
+  color: var(--accent-3);
   z-index: 5;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
-
-.fav-book-card__heart svg {
-  width: 20px;
-  height: 20px;
-  /* subtle heartbeat animation on hover could go here, but static is fine */
-}
+.fav-book-card__heart svg { width: 19px; height: 19px; }
 
 .fav-book-card__info {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
-
 .fav-book-card__info h3 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   color: var(--text-color);
   line-height: 1.3;
 }
-
 .fav-book-card__info p {
-  font-size: 0.95rem;
-  color: var(--text-color);
-  opacity: 0.7;
+  font-size: 0.92rem;
+  color: var(--text-muted);
   margin-bottom: 1rem;
 }
-
 .fav-book-card__bottom {
   margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .fav-book-card__rating {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  color: #ffd700;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  color: #ffc83d;
 }
 
-/* Empty State */
+/* ─── Empty / logged-out state ────────────────────────── */
 .empty-favorites {
   text-align: center;
-  padding: 5rem 0;
+  padding: 5rem 2rem;
   background: var(--card-bg);
-  border-radius: 20px;
-  border: 1px dashed rgba(255,255,255,0.3);
+  border-radius: 22px;
+  border: 1px dashed var(--card-border);
 }
-
-[data-theme="light"] .empty-favorites {
-  border: 1px dashed rgba(0,0,0,0.2);
-}
-
 .empty-favorites h2 {
-  font-size: 2rem;
+  font-size: 1.8rem;
   margin-bottom: 1rem;
   color: var(--text-color);
 }
-
 .empty-favorites p {
-  font-size: 1.1rem;
-  color: var(--text-color);
-  opacity: 0.7;
-}
-
-/* Modal specific for Favorites (reusing structure from Home.css but redefining danger button) */
-.book-modal__btn.danger {
-  background: transparent;
-  color: #ff4757;
-  border: 1px solid #ff4757;
-}
-
-.book-modal__btn.danger:hover {
-  background: rgba(255, 71, 87, 0.1);
-  transform: translateY(-2px);
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 440px;
+  margin: 0 auto;
 }

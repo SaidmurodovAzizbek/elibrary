@@ -8,10 +8,18 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  // Ilova ichida standart — tun (dark) rejimi; tanlov localStorage'da saqlanadi.
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = useState('light');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [modalTab, setModalTab] = useState('login'); // 'login' | 'register'
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const cart = useStore((state) => state.cart);
+  const isLoggedIn = useStore((state) => state.isLoggedIn);
+  const login = useStore((state) => state.login);
+  const register = useStore((state) => state.register);
   const logout = useStore((state) => state.logout);
 
   useEffect(() => {
@@ -26,22 +34,47 @@ export default function Navbar() {
     if (searchQuery.trim()) navigate(`/home?search=${encodeURIComponent(searchQuery.trim())}`);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/', { replace: true });
+  const openModal = () => {
+    setError('');
+    setPhone('');
+    setPassword('');
+    setModalTab('login');
+    setIsLoginModalOpen(true);
+  };
+
+  const closeModal = () => setIsLoginModalOpen(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    const fullPhone = `+998${phone.replace(/\s/g, '')}`;
+    try {
+      if (modalTab === 'login') {
+        await login(fullPhone, password);
+      } else {
+        await register(fullPhone, password);
+      }
+      closeModal();
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Xatolik yuz berdi');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <motion.header
-      className="navbar-new"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
-    >
-      <div className="navbar-new__container">
-        <div className="navbar-new__logo-wrapper" onClick={() => navigate('/home')}>
-          <div className="navbar-new__logo">eLibrary</div>
-        </div>
+    <>
+      <motion.header
+        className="navbar-new"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
+      >
+        <div className="navbar-new__container">
+          <div className="navbar-new__logo-wrapper" onClick={() => navigate('/home')}>
+            <div className="navbar-new__logo">eLibrary</div>
+          </div>
 
         <nav className="navbar-new__nav">
           <NavLink to="/home" className={({ isActive }) => `navbar-new__link ${isActive ? 'active' : ''}`}>
@@ -94,11 +127,96 @@ export default function Navbar() {
             {theme === 'light' ? '🌙 Night' : '☀️ Light'}
           </button>
 
-          <button className="navbar-new__login-btn" onClick={handleLogout}>
-            Chiqish
-          </button>
+            {isLoggedIn ? (
+              <button className="navbar-new__login-btn" onClick={logout}>
+                Chiqish
+              </button>
+            ) : (
+              <button className="navbar-new__login-btn" onClick={openModal}>
+                Kirish
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.header>
+      </motion.header>
+
+      {/* Login / Register Modal */}
+      <AnimatePresence>
+        {isLoginModalOpen && (
+          <motion.div
+            className="login-modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+          >
+            <motion.div
+              className="login-modal"
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              transition={{ type: 'spring', bounce: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="login-modal__close" onClick={closeModal} aria-label="Yopish">×</button>
+
+              {/* Tabs */}
+              <div className="login-modal__tabs">
+                <button
+                  className={`login-modal__tab ${modalTab === 'login' ? 'active' : ''}`}
+                  onClick={() => { setModalTab('login'); setError(''); }}
+                >
+                  Kirish
+                </button>
+                <button
+                  className={`login-modal__tab ${modalTab === 'register' ? 'active' : ''}`}
+                  onClick={() => { setModalTab('register'); setError(''); }}
+                >
+                  Ro'yxatdan o'tish
+                </button>
+              </div>
+
+              <div className="login-modal__header">
+                <p>Telefon raqamingiz va parolingizni kiriting</p>
+              </div>
+
+              <form className="login-modal__form" onSubmit={handleSubmit}>
+                <div className="input-group">
+                  <label>Telefon raqam</label>
+                  <div className="phone-input-wrapper">
+                    <span className="phone-prefix">+998</span>
+                    <input
+                      type="tel"
+                      placeholder="90 123 45 67"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="input-group">
+                  <label>Parol</label>
+                  <input
+                    type="password"
+                    placeholder="Parolingizni kiriting"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength="6"
+                  />
+                </div>
+
+                {error && <p className="login-modal__error">{error}</p>}
+
+                <button type="submit" className="login-modal__submit" disabled={loading} style={{ marginTop: '1.5rem' }}>
+                  {loading ? 'Yuklanmoqda...' : modalTab === 'login' ? 'Kirish' : "Ro'yxatdan o'tish"}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
