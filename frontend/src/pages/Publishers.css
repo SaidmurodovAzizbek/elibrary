@@ -13,6 +13,7 @@
 }
 
 .publisher-card {
+  position: relative;
   background: var(--card-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -31,6 +32,20 @@
   transform: translateY(-12px);
   border-color: rgba(0, 217, 255, 0.5);
   box-shadow: 0 26px 50px rgba(0, 0, 0, 0.22), 0 0 40px rgba(0, 217, 255, 0.16);
+}
+
+/* ─── Admin amal ikonkalari — faqat hover/fokusda ko'rinadi ─── */
+.publisher-card .admin-card-actions {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.publisher-card:hover .admin-card-actions,
+.publisher-card:focus-within .admin-card-actions {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .publisher-card__logo {

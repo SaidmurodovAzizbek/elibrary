@@ -54,14 +54,22 @@ export default function Publishers() {
     setFormOpen(true);
   };
 
-  const handleDelete = (publisher, e) => {
+  const handleDelete = async (publisher, e) => {
     e?.stopPropagation();
     if (!window.confirm(`"${publisher.name}" nashriyotini o'chirmoqchimisiz?`)) return;
-    setPublishers((prev) => prev.filter((p) => p.id !== publisher.id));
-    if (selectedPublisher?.id === publisher.id) closeModal();
+    try {
+      await api.delete(`/publishers/${publisher.id}`);
+      setPublishers((prev) => prev.filter((p) => p.id !== publisher.id));
+      if (selectedPublisher?.id === publisher.id) closeModal();
+    } catch (err) {
+      const status = err.response?.status;
+      alert(status === 401 || status === 403
+        ? 'Bu amal uchun admin huquqi kerak'
+        : "Nashriyotni o'chirishda xatolik yuz berdi");
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
       name: form.name.trim(),
@@ -69,12 +77,21 @@ export default function Publishers() {
       description: form.description.trim() || null,
       image: form.image.trim() || null,
     };
-    if (editing) {
-      setPublishers((prev) => prev.map((p) => (p.id === editing.id ? { ...p, ...payload } : p)));
-    } else {
-      setPublishers((prev) => [{ id: Date.now(), ...payload }, ...prev]);
+    try {
+      if (editing) {
+        const res = await api.put(`/publishers/${editing.id}`, payload);
+        setPublishers((prev) => prev.map((p) => (p.id === editing.id ? res.data : p)));
+      } else {
+        const res = await api.post('/publishers/', payload);
+        setPublishers((prev) => [res.data, ...prev]);
+      }
+      setFormOpen(false);
+    } catch (err) {
+      const status = err.response?.status;
+      alert(status === 401 || status === 403
+        ? 'Bu amal uchun admin huquqi kerak'
+        : (err.response?.data?.detail || 'Saqlashda xatolik yuz berdi'));
     }
-    setFormOpen(false);
   };
 
   return (

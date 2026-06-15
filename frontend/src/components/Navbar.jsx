@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import './Navbar.css';
 
@@ -8,7 +8,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [modalTab, setModalTab] = useState('login'); // 'login' | 'register'
   const [phone, setPhone] = useState('');

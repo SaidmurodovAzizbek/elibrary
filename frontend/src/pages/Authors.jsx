@@ -15,7 +15,19 @@ const GRADIENTS = [
   'linear-gradient(135deg, #9b59b6, #8e44ad)',
 ];
 
-const EMPTY_FORM = { full_name: '', birth_year: '', death_year: '', description: '', image: '' };
+const EMPTY_FORM = { full_name: '', birth_year: '', death_year: '', alive: true, description: '', image: '' };
+
+// Muallif hayotmi? (vafot etgan yili belgilanmagan bo'lsa — hayot)
+const isAlive = (author) => !author.death_year;
+
+function StatusBadge({ author }) {
+  return (
+    <span className={`author-status author-status--${isAlive(author) ? 'alive' : 'deceased'}`}>
+      <span className="author-status__dot" />
+      {isAlive(author) ? 'Hayot' : 'Vafot etgan'}
+    </span>
+  );
+}
 
 export default function Authors() {
   const [authors, setAuthors] = useState([]);
@@ -49,34 +61,52 @@ export default function Authors() {
       full_name: author.full_name || '',
       birth_year: author.birth_year ?? '',
       death_year: author.death_year ?? '',
+      alive: !author.death_year,
       description: author.description || '',
       image: author.image || '',
     });
     setFormOpen(true);
   };
 
-  const handleDelete = (author, e) => {
+  const handleDelete = async (author, e) => {
     e?.stopPropagation();
     if (!window.confirm(`"${author.full_name}" muallifini o'chirmoqchimisiz?`)) return;
-    setAuthors((prev) => prev.filter((a) => a.id !== author.id));
-    if (selectedAuthor?.id === author.id) closeModal();
+    try {
+      await api.delete(`/authors/${author.id}`);
+      setAuthors((prev) => prev.filter((a) => a.id !== author.id));
+      if (selectedAuthor?.id === author.id) closeModal();
+    } catch (err) {
+      const status = err.response?.status;
+      alert(status === 401 || status === 403
+        ? 'Bu amal uchun admin huquqi kerak'
+        : "Muallifni o'chirishda xatolik yuz berdi");
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
       full_name: form.full_name.trim(),
       birth_year: form.birth_year ? Number(form.birth_year) : null,
-      death_year: form.death_year ? Number(form.death_year) : null,
+      death_year: form.alive ? null : (form.death_year ? Number(form.death_year) : null),
       description: form.description.trim() || null,
       image: form.image.trim() || null,
     };
-    if (editing) {
-      setAuthors((prev) => prev.map((a) => (a.id === editing.id ? { ...a, ...payload } : a)));
-    } else {
-      setAuthors((prev) => [{ id: Date.now(), ...payload }, ...prev]);
+    try {
+      if (editing) {
+        const res = await api.put(`/authors/${editing.id}`, payload);
+        setAuthors((prev) => prev.map((a) => (a.id === editing.id ? res.data : a)));
+      } else {
+        const res = await api.post('/authors/', payload);
+        setAuthors((prev) => [res.data, ...prev]);
+      }
+      setFormOpen(false);
+    } catch (err) {
+      const status = err.response?.status;
+      alert(status === 401 || status === 403
+        ? 'Bu amal uchun admin huquqi kerak'
+        : (err.response?.data?.detail || 'Saqlashda xatolik yuz berdi'));
     }
-    setFormOpen(false);
   };
 
   const openAuthor = async (author) => {
@@ -97,7 +127,7 @@ export default function Authors() {
 
   const yearsLabel = (author) => {
     if (author.birth_year && author.death_year) return `${author.birth_year} — ${author.death_year}`;
-    if (author.birth_year) return `${author.birth_year} — hozir`;
+    if (author.birth_year) return `${author.birth_year} y. tug'ilgan`;
     return '';
   };
 
@@ -162,7 +192,8 @@ export default function Authors() {
                 </div>
                 <div className="author-card__info">
                   <h3>{author.full_name}</h3>
-                  <p>{yearsLabel(author)}</p>
+                  {yearsLabel(author) && <p>{yearsLabel(author)}</p>}
+                  <StatusBadge author={author} />
                 </div>
               </motion.div>
             ))}
@@ -200,9 +231,12 @@ export default function Authors() {
                 ></div>
                 <div className="author-modal__meta">
                   <h2 className="author-modal__name">{selectedAuthor.full_name}</h2>
-                  {yearsLabel(selectedAuthor) && (
-                    <span className="author-modal__years">{yearsLabel(selectedAuthor)}</span>
-                  )}
+                  <div className="author-modal__status-row">
+                    {yearsLabel(selectedAuthor) && (
+                      <span className="author-modal__years">{yearsLabel(selectedAuthor)}</span>
+                    )}
+                    <StatusBadge author={selectedAuthor} />
+                  </div>
                   {selectedAuthor.description && (
                     <p className="author-modal__bio">{selectedAuthor.description}</p>
                   )}
@@ -279,9 +313,28 @@ export default function Authors() {
                   </div>
                   <div className="admin-field">
                     <label>Vafot etgan yili</label>
-                    <input type="number" value={form.death_year} onChange={(e) => setField('death_year', e.target.value)} placeholder="1938" />
+                    <input
+                      type="number"
+                      value={form.alive ? '' : form.death_year}
+                      onChange={(e) => setField('death_year', e.target.value)}
+                      placeholder="1938"
+                      disabled={form.alive}
+                    />
                   </div>
                 </div>
+
+                <label className="admin-check">
+                  <input
+                    type="checkbox"
+                    checked={form.alive}
+                    onChange={(e) => setForm((f) => ({
+                      ...f,
+                      alive: e.target.checked,
+                      death_year: e.target.checked ? '' : f.death_year,
+                    }))}
+                  />
+                  <span>Muallif hozir hayot (vafot etmagan)</span>
+                </label>
 
                 <div className="admin-field">
                   <label>Rasm havolasi (URL)</label>

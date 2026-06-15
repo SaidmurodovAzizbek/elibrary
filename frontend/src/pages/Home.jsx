@@ -17,11 +17,6 @@ const GRADIENTS = [
   'linear-gradient(135deg, #9b59b6, #8e44ad)',
 ];
 
-const EMPTY_FORM = {
-  title: '', author_id: '', publisher_id: '', description: '',
-  published_year: '', pages: '', price: '', rating: '', image: '',
-};
-
 export default function Home() {
   const [searchParams] = useSearchParams();
   const [books, setBooks] = useState([]);
@@ -35,14 +30,10 @@ export default function Home() {
   const removeFavorite = useStore((state) => state.removeFavorite);
   const isAdmin = role === 'admin';
 
-  // Admin form state (mock CRUD — not persisted to backend yet)
-  const [authors, setAuthors] = useState([]);
-  const [publishers, setPublishers] = useState([]);
+  // Admin kitob formasi (AddBookModal — backendga ulangan)
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [editingBook, setEditingBook] = useState(null);
 
-  const isAdmin = role === 'admin';
   const search = searchParams.get('search') || '';
 
   const fetchBooks = useCallback(() => {
@@ -55,6 +46,12 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, [search]);
 
+  useEffect(() => {
+    // Qidiruv o'zgarganda qayta yuklaymiz; loading flagi (re)fetchda ataylab o'rnatiladi.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchBooks();
+  }, [fetchBooks]);
+
   const closeModal = () => setSelectedBook(null);
   const isFavorited = (bookId) => favorites.some((f) => f.book_id === bookId);
 
@@ -64,103 +61,38 @@ export default function Home() {
     else await addFavorite(book.id);
   };
 
-  // ─── Admin CRUD (mock / local) ──────────────────────────
-  const setField = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const openCreate = () => {
-    setEditing(null);
-    setForm(EMPTY_FORM);
-    setFormOpen(true);
-  };
+  // ─── Admin CRUD (backend) ──────────────────────────────
+  const openCreate = () => { setEditingBook(null); setFormOpen(true); };
 
   const openEdit = (book, e) => {
     e?.stopPropagation();
-    setEditing(book);
-    setForm({
-      title: book.title || '',
-      author_id: book.author_id ?? book.author?.id ?? '',
-      publisher_id: book.publisher_id ?? book.publisher?.id ?? '',
-      description: book.description || '',
-      published_year: book.published_year ?? '',
-      pages: book.pages ?? '',
-      price: book.price ?? '',
-      rating: book.rating ?? '',
-      image: book.image || '',
-    });
+    setEditingBook(book);
     setFormOpen(true);
   };
 
-  const handleDelete = (book, e) => {
-    e?.stopPropagation();
-    if (!window.confirm(`"${book.title}" kitobini o'chirmoqchimisiz?`)) return;
-    setBooks((prev) => prev.filter((b) => b.id !== book.id));
-    if (selectedBook?.id === book.id) closeModal();
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const author = authors.find((a) => a.id === Number(form.author_id)) || null;
-    const publisher = publishers.find((p) => p.id === Number(form.publisher_id)) || null;
-    const payload = {
-      title: form.title.trim(),
-      description: form.description.trim() || null,
-      published_year: form.published_year ? Number(form.published_year) : null,
-      pages: form.pages ? Number(form.pages) : null,
-      price: form.price ? Number(form.price) : 0,
-      rating: form.rating ? Number(form.rating) : 0,
-      image: form.image.trim() || null,
-      author_id: form.author_id ? Number(form.author_id) : null,
-      publisher_id: form.publisher_id ? Number(form.publisher_id) : null,
-      author,
-      publisher,
-    };
-
-    if (editing) {
-      setBooks((prev) => prev.map((b) => (b.id === editing.id ? { ...b, ...payload } : b)));
-    } else {
-      setBooks((prev) => [{ id: Date.now(), ...payload }, ...prev]);
-    }
-    setFormOpen(false);
-  };
-
-  // Kitob ma'lumotlarini matn fayl ko'rinishida yuklab olish
-  const downloadBook = (book) => {
-    const lines = [
-      `Kitob: ${book.title}`,
-      `Muallif: ${book.author?.full_name || '—'}`,
-      book.publisher ? `Nashriyot: ${book.publisher.name}` : null,
-      book.published_year ? `Nashr yili: ${book.published_year}` : null,
-      book.pages ? `Betlar soni: ${book.pages}` : null,
-      `Reyting: ${book.rating?.toFixed(1) ?? '—'}`,
-      '',
-      book.description || '',
-    ].filter((l) => l !== null).join('\n');
-    const blob = new Blob([lines], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${book.title}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // Admin: kitobni o'chirish
-  const handleDeleteBook = async (book) => {
-    if (!window.confirm(`"${book.title}" kitobini o'chirmoqchimisiz?`)) return;
-    try {
-      await api.delete(`/books/${book.id}`);
-      closeModal();
-      fetchBooks();
-    } catch {
-      alert("Kitobni o'chirishda xatolik yuz berdi");
-    }
-  };
-
-  // Admin: tahrirlash — ko'rish modalini yopib, forma modalini ochamiz
+  // Detail modaldan tahrirlash — ko'rish modalini yopib formani ochamiz
   const startEdit = (book) => {
     setSelectedBook(null);
     setEditingBook(book);
+    setFormOpen(true);
   };
+
+  const handleDelete = async (book, e) => {
+    e?.stopPropagation();
+    if (!window.confirm(`"${book.title}" kitobini o'chirmoqchimisiz?`)) return;
+    try {
+      await api.delete(`/books/${book.id}`);
+      if (selectedBook?.id === book.id) closeModal();
+      fetchBooks();
+    } catch (err) {
+      const status = err.response?.status;
+      alert(status === 401 || status === 403
+        ? 'Bu amal uchun admin huquqi kerak'
+        : "Kitobni o'chirishda xatolik yuz berdi");
+    }
+  };
+
+  const closeForm = () => { setFormOpen(false); setEditingBook(null); };
 
   return (
     <motion.div
@@ -174,6 +106,15 @@ export default function Home() {
         <h1 className="section-title">
           {search ? `"${search}" — qidiruv natijalari` : 'Kitoblar'}
         </h1>
+
+        {isAdmin && (
+          <div className="admin-bar">
+            <button className="admin-add-btn" onClick={openCreate}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+              Yangi kitob qo'shish
+            </button>
+          </div>
+        )}
 
         {loading ? (
           <div className="loading-state">Yuklanmoqda...</div>
@@ -324,7 +265,7 @@ export default function Home() {
                       </button>
                       <button
                         className="book-modal__btn delete"
-                        onClick={() => handleDeleteBook(selectedBook)}
+                        onClick={() => handleDelete(selectedBook)}
                       >
                         🗑 O'chirish
                       </button>
@@ -334,6 +275,17 @@ export default function Home() {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Admin: kitob qo'shish / tahrirlash formasi ──── */}
+      <AnimatePresence>
+        {formOpen && (
+          <AddBookModal
+            book={editingBook}
+            onClose={closeForm}
+            onSaved={fetchBooks}
+          />
         )}
       </AnimatePresence>
     </motion.div>

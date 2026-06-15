@@ -43,15 +43,19 @@ export const useStore = create((set, get) => ({
 
   // ─── Auth ──────────────────────────────────────────────
   isLoggedIn: !!localStorage.getItem('access_token'),
+  role: decodeToken(localStorage.getItem('access_token'))?.role ?? null,
 
-  login: async (phoneNumber, password) => {
+  login: async (username, password) => {
     const res = await api.post('/auth/login', {
-      phone_number: phoneNumber,
+      username,
       password,
     });
     localStorage.setItem('access_token', res.data.access_token);
     localStorage.setItem('refresh_token', res.data.refresh_token);
-    set({ isLoggedIn: true });
+    set({
+      isLoggedIn: true,
+      role: decodeToken(res.data.access_token)?.role ?? null,
+    });
     await get().fetchFavorites();
   },
 
@@ -66,7 +70,7 @@ export const useStore = create((set, get) => ({
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    set({ isLoggedIn: false, favorites: [] });
+    set({ isLoggedIn: false, role: null, favorites: [] });
   },
 
   // ─── Favorites ─────────────────────────────────────────
