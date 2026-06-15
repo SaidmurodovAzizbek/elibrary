@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import api from '../api';
+import AddBookModal from '../components/AddBookModal';
 import './Home.css';
 
 const GRADIENTS = [
@@ -21,15 +22,18 @@ export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [showAddBook, setShowAddBook] = useState(false);
   const addToCart = useStore((state) => state.addToCart);
   const isLoggedIn = useStore((state) => state.isLoggedIn);
+  const role = useStore((state) => state.role);
   const favorites = useStore((state) => state.favorites);
   const addFavorite = useStore((state) => state.addFavorite);
   const removeFavorite = useStore((state) => state.removeFavorite);
 
+  const isAdmin = role === 'admin';
   const search = searchParams.get('search') || '';
 
-  useEffect(() => {
+  const fetchBooks = useCallback(() => {
     setLoading(true);
     const params = { limit: 100 };
     if (search) params.search = search;
@@ -38,6 +42,8 @@ export default function Home() {
       .catch(() => setBooks([]))
       .finally(() => setLoading(false));
   }, [search]);
+
+  useEffect(() => { fetchBooks(); }, [fetchBooks]);
 
   const closeModal = () => setSelectedBook(null);
 
@@ -61,9 +67,20 @@ export default function Home() {
       transition={{ duration: 0.5 }}
     >
       <section className="books-section">
-        <h1 className="section-title">
-          {search ? `"${search}" — qidiruv natijalari` : 'Kitoblar'}
-        </h1>
+        <div className="books-section__head">
+          <h1 className="section-title">
+            {search ? `"${search}" — qidiruv natijalari` : 'Kitoblar'}
+          </h1>
+          {isAdmin && (
+            <button className="add-book-btn" onClick={() => setShowAddBook(true)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Kitob qo‘shish
+            </button>
+          )}
+        </div>
 
         {loading ? (
           <div className="loading-state">Yuklanmoqda...</div>
@@ -196,6 +213,15 @@ export default function Home() {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showAddBook && (
+          <AddBookModal
+            onClose={() => setShowAddBook(false)}
+            onCreated={fetchBooks}
+          />
         )}
       </AnimatePresence>
     </motion.div>

@@ -11,6 +11,7 @@ from app.database import get_db
 from app.schemas.book import BookCreate, BookUpdate, BookRead, BookReadDetailed
 from app.crud.book import crud_book
 from app.core.exceptions import NotFoundException
+from app.core.security import get_current_admin
 
 router = APIRouter()
 
@@ -40,26 +41,35 @@ async def get_book(book_id: int, db: AsyncSession = Depends(get_db)):
     return book
 
 
-@router.post("/", response_model=BookRead, status_code=201)
+@router.post(
+    "/", response_model=BookRead, status_code=201,
+    dependencies=[Depends(get_current_admin)],
+)
 async def create_book(data: BookCreate, db: AsyncSession = Depends(get_db)):
-    """Yangi kitob yaratish."""
+    """Yangi kitob yaratish (faqat admin)."""
     return await crud_book.create(db, data.model_dump())
 
 
-@router.put("/{book_id}", response_model=BookRead)
+@router.put(
+    "/{book_id}", response_model=BookRead,
+    dependencies=[Depends(get_current_admin)],
+)
 async def update_book(
     book_id: int, data: BookUpdate, db: AsyncSession = Depends(get_db)
 ):
-    """Kitob ma'lumotlarini yangilash."""
+    """Kitob ma'lumotlarini yangilash (faqat admin)."""
     book = await crud_book.get(db, book_id)
     if not book:
         raise NotFoundException("Kitob topilmadi")
     return await crud_book.update(db, book, data.model_dump(exclude_unset=True))
 
 
-@router.delete("/{book_id}", status_code=204)
+@router.delete(
+    "/{book_id}", status_code=204,
+    dependencies=[Depends(get_current_admin)],
+)
 async def delete_book(book_id: int, db: AsyncSession = Depends(get_db)):
-    """Kitobni o'chirish."""
+    """Kitobni o'chirish (faqat admin)."""
     deleted = await crud_book.delete(db, book_id)
     if not deleted:
         raise NotFoundException("Kitob topilmadi")

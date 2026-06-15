@@ -1,0 +1,167 @@
+/* ─── Add Book Modal ──────────────────────────────────── */
+.abm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(6, 5, 12, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.abm-modal {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2.25rem 2.25rem 2rem;
+  border-radius: 24px;
+  background: rgba(22, 20, 36, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+.abm-close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.25rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.abm-close:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
+
+.abm-title {
+  margin: 0 0 1.6rem;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(120deg, #fff 30%, #b8b2ff 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.abm-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.25rem;
+}
+.abm-col-2 { grid-column: 1 / -1; }
+
+.abm-field { display: flex; flex-direction: column; gap: 0.4rem; }
+.abm-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.abm-field input,
+.abm-field select,
+.abm-field textarea {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 11px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+.abm-field textarea { resize: vertical; }
+.abm-field input::placeholder,
+.abm-field textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+.abm-field input:focus,
+.abm-field select:focus,
+.abm-field textarea:focus {
+  border-color: rgba(108, 99, 255, 0.8);
+  background: rgba(108, 99, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+}
+.abm-field select option { background: #1a1830; color: #fff; }
+
+.abm-select-row { display: flex; gap: 0.5rem; }
+.abm-select-row select { flex: 1; }
+
+.abm-mini-btn {
+  white-space: nowrap;
+  padding: 0 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #c7c2ff;
+  background: rgba(108, 99, 255, 0.14);
+  border: 1px solid rgba(108, 99, 255, 0.35);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.abm-mini-btn:hover { background: rgba(108, 99, 255, 0.26); color: #fff; }
+.abm-mini-btn.solid {
+  color: #fff;
+  background: linear-gradient(120deg, #6C63FF, #00D9FF);
+  border: none;
+}
+
+.abm-inline-add {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.abm-inline-add input { flex: 1; }
+
+.abm-error {
+  margin: 0;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  color: #ff8fa3;
+  background: rgba(255, 107, 157, 0.1);
+  border: 1px solid rgba(255, 107, 157, 0.3);
+  border-radius: 11px;
+}
+
+.abm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+.abm-btn {
+  padding: 0.8rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.abm-btn.ghost {
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.abm-btn.ghost:hover { color: #fff; background: rgba(255, 255, 255, 0.12); }
+.abm-btn.solid {
+  color: #fff;
+  background: linear-gradient(120deg, #6C63FF, #8a63ff 55%, #00D9FF);
+  box-shadow: 0 10px 26px rgba(108, 99, 255, 0.35);
+}
+.abm-btn.solid:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(108, 99, 255, 0.5); }
+.abm-btn.solid:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 560px) {
+  .abm-form { grid-template-columns: 1fr; }
+  .abm-modal { padding: 1.8rem 1.4rem 1.5rem; }
+}

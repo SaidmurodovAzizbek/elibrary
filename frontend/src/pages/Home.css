@@ -10,6 +10,38 @@
   position: relative;
 }
 
+.books-section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+.books-section__head .section-title {
+  margin-bottom: 0;
+}
+
+.add-book-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(120deg, #6C63FF, #8a63ff 55%, #00D9FF);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(108, 99, 255, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.add-book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(108, 99, 255, 0.5);
+}
+
 .section-title {
   font-size: 3rem;
   font-weight: 800;
