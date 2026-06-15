@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+// Production'da Vercel env-variable (VITE_API_URL) ishlatiladi;
+// lokal dev'da fallback sifatida localhost.
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
 });
 
 api.interceptors.request.use((config) => {

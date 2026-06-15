@@ -1,0 +1,34 @@
+# Render Blueprint — eLibrary backend (FastAPI / uvicorn)
+# https://render.com/docs/blueprint-spec
+#
+# Bu fayl backend servisini reproducible qiladi: Root Directory, build/start
+# komandalar va Python versiyasi shu yerda. Maxfiy qiymatlar (sync: false)
+# Render dashboard'da Environment bo'limida qo'lda kiritiladi.
+services:
+  - type: web
+    name: elibrary-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # Python 3.14 SQLAlchemy 2.0.36 bilan mos emas — lokal kabi 3.12'ga qadaymiz.
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      # Neon ulanish stringi — dashboard'da kiriting (postgresql+asyncpg://...).
+      - key: DATABASE_URL
+        sync: false
+      # Kuchli maxfiy kalit — Render avtomatik generatsiya qiladi.
+      - key: SECRET_KEY
+        generateValue: true
+      # CORS — Vercel frontend manzilini kiriting, masalan:
+      # ["https://sizning-app.vercel.app"]
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: DEBUG
+        value: "false"
